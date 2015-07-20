@@ -1,4 +1,4 @@
-package moe.cowan.b.annsearcher.frontend;
+package moe.cowan.b.annsearcher.frontend.utils;
 
 /**
  * Created by user on 07/02/2015.

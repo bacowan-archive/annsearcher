@@ -17,9 +17,11 @@ import java.util.List;
 import moe.cowan.b.annsearcher.R;
 import moe.cowan.b.annsearcher.frontend.fragments.AnimeListFragment;
 import moe.cowan.b.annsearcher.frontend.fragments.VoiceSearchFragment;
+import roboguice.activity.RoboFragmentActivity;
+import roboguice.inject.ContentView;
 
-
-public class MainActivity extends FragmentActivity {
+@ContentView(R.layout.activity_main)
+public class MainActivity extends RoboFragmentActivity {
 
     public static final String USERNAME_INTENT_TAG = "USERNAME";
     private static final String ANIME_LIST_FRAGMENT_TITLE = "List";
@@ -35,7 +37,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         linkActivityToFragments();
     }
 
@@ -50,7 +51,7 @@ public class MainActivity extends FragmentActivity {
         Bundle bun = new Bundle();
         Intent intent = getIntent();
         bun.putString(USERNAME_INTENT_TAG, intent.getStringExtra(USERNAME_INTENT_TAG));
-        bun.putParcelable(LauncherActivityOld.DATABASE_PARCELABLE_NAME, intent.getParcelableExtra(LauncherActivityOld.DATABASE_PARCELABLE_NAME));
+        bun.putParcelable(LauncherActivity.DATABASE_PARCELABLE_NAME, intent.getParcelableExtra(LauncherActivity.DATABASE_PARCELABLE_NAME));
         return bun;
     }
 

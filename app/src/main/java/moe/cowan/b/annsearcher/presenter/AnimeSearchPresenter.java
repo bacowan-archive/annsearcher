@@ -4,6 +4,7 @@ import android.app.Application;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import moe.cowan.b.annsearcher.backend.Anime;
