@@ -1,4 +1,4 @@
-package moe.cowan.b.annsearcher.frontend.peopleFilters;
+package moe.cowan.b.annsearcher.frontend.utils.peopleFilters;
 
 import java.util.List;
 

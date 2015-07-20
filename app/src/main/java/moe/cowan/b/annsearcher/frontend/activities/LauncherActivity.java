@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import moe.cowan.b.annsearcher.R;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
+import roboguice.activity.RoboActivity;
+import roboguice.inject.ContentView;
 
 /**
  * Created by user on 17/07/2015.
  */
-public abstract class LauncherActivity extends Activity {
+public abstract class LauncherActivity extends RoboActivity {
 
     public static final String DATABASE_PARCELABLE_NAME = "SERIALIZED_DATABASE";
 

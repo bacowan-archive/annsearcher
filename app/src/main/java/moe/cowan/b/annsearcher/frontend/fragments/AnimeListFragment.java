@@ -3,7 +3,6 @@ package moe.cowan.b.annsearcher.frontend.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +20,15 @@ import moe.cowan.b.annsearcher.backend.Anime;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.activities.AnimeSearchActivity;
 import moe.cowan.b.annsearcher.frontend.activities.LauncherActivity;
-import moe.cowan.b.annsearcher.frontend.Observer;
+import moe.cowan.b.annsearcher.frontend.utils.Observer;
 import moe.cowan.b.annsearcher.presenter.AnimeListPresenter;
+import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 
 /**
  * Created by user on 24/01/2015.
  */
-public class AnimeListFragment extends Fragment implements Observer {
+public class AnimeListFragment extends RoboFragment implements Observer {
 
     private AnimeListPresenter presenter;
     @InjectView(R.id.search_anime_button) Button searchAnimeButton;
@@ -49,15 +49,15 @@ public class AnimeListFragment extends Fragment implements Observer {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
-        View rootView = inflater.inflate(
+        return inflater.inflate(
                 R.layout.anime_list_view, container, false);
+    }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         addListeners();
-
         presenter.fillList();
-
-        return rootView;
     }
 
     private void addListeners() {
@@ -96,7 +96,6 @@ public class AnimeListFragment extends Fragment implements Observer {
     private class AnimeListAdapter extends BaseAdapter {
 
         private List<Anime> animes;
-        @InjectView(R.id.main_text) TextView titleText;
 
         public AnimeListAdapter(Collection<Anime> animes) {
             this.animes = new ArrayList(animes);
@@ -127,6 +126,7 @@ public class AnimeListFragment extends Fragment implements Observer {
 
             Anime currentAnime = animes.get(position);
 
+            TextView titleText = (TextView) convertView.findViewById(R.id.main_text);
             titleText.setText(currentAnime.getTitle());
 
             return convertView;

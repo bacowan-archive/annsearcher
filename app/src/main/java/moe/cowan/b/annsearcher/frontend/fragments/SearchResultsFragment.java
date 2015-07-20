@@ -7,16 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import moe.cowan.b.annsearcher.R;
+import roboguice.fragment.RoboFragment;
 
 /**
  * Created by user on 24/01/2015.
  */
-public class SearchResultsFragment extends Fragment {
+public class SearchResultsFragment extends RoboFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(
+        return inflater.inflate(
                 R.layout.anime_list_view, container, false);
-        return rootView;
     }
 }

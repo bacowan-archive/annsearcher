@@ -7,8 +7,8 @@ import java.util.List;
 import moe.cowan.b.annsearcher.backend.Id;
 import moe.cowan.b.annsearcher.backend.Person;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
-import moe.cowan.b.annsearcher.frontend.peopleFilters.JapanesePeopleFilter;
-import moe.cowan.b.annsearcher.frontend.peopleFilters.PeopleFilter;
+import moe.cowan.b.annsearcher.frontend.utils.peopleFilters.JapanesePeopleFilter;
+import moe.cowan.b.annsearcher.frontend.utils.peopleFilters.PeopleFilter;
 
 
 /**

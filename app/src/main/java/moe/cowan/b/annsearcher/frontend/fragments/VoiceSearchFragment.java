@@ -16,7 +16,7 @@ import moe.cowan.b.annsearcher.backend.Anime;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.activities.AnimeSearchActivity;
 import moe.cowan.b.annsearcher.frontend.activities.CharacterSearchActivity;
-import moe.cowan.b.annsearcher.frontend.activities.LauncherActivityOld;
+import moe.cowan.b.annsearcher.frontend.activities.LauncherActivity;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 
@@ -37,13 +37,18 @@ public class VoiceSearchFragment extends RoboFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(
+        return inflater.inflate(
                 R.layout.voice_search_view, container, false);
-        addListeners(rootView);
-        return rootView;
     }
 
-    private void addListeners(View fragmentView) {
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        searchAnimeButton = (Button) getView().findViewById(R.id.search_anime_button);
+        searchCharacterButton = (Button) getView().findViewById(R.id.search_character_button);
+        addListeners();
+    }
+
+    private void addListeners() {
         searchAnimeButton.setOnClickListener(new SearchAnimeClickListener());
         searchCharacterButton.setOnClickListener(new SearchCharacterClickListener());
     }
@@ -71,13 +76,13 @@ public class VoiceSearchFragment extends RoboFragment {
     private Intent createAnimeSearchViewIntent() {
         Intent intent = new Intent(getActivity(), AnimeSearchActivity.class);
         DatabaseProxy dbp = getActivityDatabaseProxy();
-        intent.putExtra(LauncherActivityOld.DATABASE_PARCELABLE_NAME,dbp);
+        intent.putExtra(LauncherActivity.DATABASE_PARCELABLE_NAME,dbp);
         return intent;
     }
 
     private DatabaseProxy getActivityDatabaseProxy() {
         Bundle bun = getActivity().getIntent().getExtras();
-        return bun.getParcelable(LauncherActivityOld.DATABASE_PARCELABLE_NAME);
+        return bun.getParcelable(LauncherActivity.DATABASE_PARCELABLE_NAME);
     }
 
     private void startCharacterSearchView() {
@@ -89,7 +94,7 @@ public class VoiceSearchFragment extends RoboFragment {
     private Intent getCharacterSearchViewIntent() {
         Intent intent = new Intent(getActivity(), CharacterSearchActivity.class);
         DatabaseProxy dbp = getActivityDatabaseProxy();
-        intent.putExtra(LauncherActivityOld.DATABASE_PARCELABLE_NAME,dbp);
+        intent.putExtra(LauncherActivity.DATABASE_PARCELABLE_NAME,dbp);
         intent.putExtra(ANIME_TITLE, currentAnime);
         return intent;
     }
@@ -108,13 +113,13 @@ public class VoiceSearchFragment extends RoboFragment {
     }
 
     private void findCharacterActivityResult(Intent data) {
-        currentPerson = data.getParcelableExtra(SearchFragment.SEARCH_RESULT);
+        currentPerson = (Person) data.getSerializableExtra(SearchFragment.SEARCH_RESULT);
         TextView personText = (TextView) getActivity().findViewById(R.id.search_character_title_set_text);
         personText.setText(currentPerson.getRole());
     }
 
     private void findAnimeActivityResult(Intent data) {
-        currentAnime = data.getParcelableExtra(SearchFragment.SEARCH_RESULT);
+        currentAnime = (Anime) data.getSerializableExtra(SearchFragment.SEARCH_RESULT);
         TextView animeText = (TextView) getActivity().findViewById(R.id.search_anime_title_set_text);
         animeText.setText(currentAnime.getTitle());
     }
