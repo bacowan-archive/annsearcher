@@ -36,4 +36,6 @@ dependencies {
     provided 'org.roboguice:roboblender:3.+'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile files('libs/mockito-all-1.10.5.jar')
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
 }
