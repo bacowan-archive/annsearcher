@@ -3,16 +3,48 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:id="@+id/actor_name_title"
         android:gravity="center_horizontal"
         android:text="Voice actor / actress"/>
 
-    <ListView
+    <TableLayout
+        android:id="@+id/header_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView2"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/black"
+        android:stretchColumns="*">
+        <TableRow android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:gravity="center"
+                android:background="@android:color/white"
+                android:layout_margin="1dp"
+                android:layout_width="0dp"
+                android:text="Anime Title"
+                android:layout_height="match_parent" />
+            <TextView
+                android:gravity="center"
+                android:background="@android:color/white"
+                android:layout_margin="1dp"
+                android:layout_width="0dp"
+                android:text="Characters Played"
+                android:layout_height="match_parent"/>
+        </TableRow>
+    </TableLayout>
+
+
+    <TableLayout
+        android:id="@+id/search_result_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/black"
+        android:stretchColumns="*">
+    </TableLayout>
+
+
 </LinearLayout>

@@ -9,16 +9,16 @@
         android:id="@+id/spinner"
         android:layout_gravity="center_horizontal"/>
 
-    <!--see http://stackoverflow.com/questions/12071829/how-to-insert-layout-to-layout-in-android-->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal">
-        <include layout="@layout/voice_search_character_options"></include>
+        <include layout="@layout/voice_search_character_options"/>
     </LinearLayout>
 
     <Button
+        android:id="@+id/crossreference_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="30dp"

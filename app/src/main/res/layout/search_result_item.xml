@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:id="@+id/anime_title_cell"
+        android:text="Anime Title"
+        android:layout_width="0dp"
+        android:padding="3dip"
+        android:background="@android:color/white"
+        android:layout_margin="1dp"/>
+    <ListView
+        android:id="@+id/character_name_list"
+        android:gravity="end"
+        android:layout_width="0dp"
+        android:padding="3dip"
+        android:background="@android:color/white"
+        android:layout_margin="1dp"/>
+
+</TableRow>

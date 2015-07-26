@@ -17,6 +17,7 @@ import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.activities.AnimeSearchActivity;
 import moe.cowan.b.annsearcher.frontend.activities.CharacterSearchActivity;
 import moe.cowan.b.annsearcher.frontend.activities.LauncherActivity;
+import moe.cowan.b.annsearcher.frontend.activities.SearchResultsActivity;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 
@@ -27,6 +28,7 @@ import roboguice.inject.InjectView;
 public class VoiceSearchFragment extends RoboFragment {
 
     public static final String ANIME_TITLE = "ANIME_TITLE";
+    public static final String PERSON_NAME = "PERSON_NAME";
     public static final int FIND_ANIME = 0;
     public static final int FIND_CHARACTER = 1;
     private Anime currentAnime = null;
@@ -34,6 +36,7 @@ public class VoiceSearchFragment extends RoboFragment {
 
     @InjectView(R.id.search_anime_button) Button searchAnimeButton;
     @InjectView(R.id.search_character_button) Button searchCharacterButton;
+    @InjectView(R.id.crossreference_button) Button crossreferenceButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,12 +48,14 @@ public class VoiceSearchFragment extends RoboFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         searchAnimeButton = (Button) getView().findViewById(R.id.search_anime_button);
         searchCharacterButton = (Button) getView().findViewById(R.id.search_character_button);
+        crossreferenceButton = (Button) getView().findViewById(R.id.crossreference_button);
         addListeners();
     }
 
     private void addListeners() {
         searchAnimeButton.setOnClickListener(new SearchAnimeClickListener());
         searchCharacterButton.setOnClickListener(new SearchCharacterClickListener());
+        crossreferenceButton.setOnClickListener(new SearchClickListener());
     }
 
     private class SearchAnimeClickListener implements View.OnClickListener {
@@ -67,6 +72,11 @@ public class VoiceSearchFragment extends RoboFragment {
         }
     }
 
+    public class SearchClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) { startSearchResultsView(); }
+    }
+
     private void startAnimeSearchView() {
         Intent intent = createAnimeSearchViewIntent();
         startActivityForResult(intent, FIND_ANIME);
@@ -76,7 +86,7 @@ public class VoiceSearchFragment extends RoboFragment {
     private Intent createAnimeSearchViewIntent() {
         Intent intent = new Intent(getActivity(), AnimeSearchActivity.class);
         DatabaseProxy dbp = getActivityDatabaseProxy();
-        intent.putExtra(LauncherActivity.DATABASE_PARCELABLE_NAME,dbp);
+        intent.putExtra(LauncherActivity.DATABASE_PARCELABLE_NAME, dbp);
         return intent;
     }
 
@@ -122,6 +132,20 @@ public class VoiceSearchFragment extends RoboFragment {
         currentAnime = (Anime) data.getSerializableExtra(SearchFragment.SEARCH_RESULT);
         TextView animeText = (TextView) getActivity().findViewById(R.id.search_anime_title_set_text);
         animeText.setText(currentAnime.getTitle());
+    }
+
+    private void startSearchResultsView() {
+        Intent intent = getSearchResultsViewIntent();
+        startActivity(intent);
+    }
+
+    private Intent getSearchResultsViewIntent() {
+        Intent intent = new Intent(getActivity(), SearchResultsActivity.class);
+        DatabaseProxy dbp = getActivityDatabaseProxy();
+        intent.putExtra(LauncherActivity.DATABASE_PARCELABLE_NAME, dbp);
+        intent.putExtra(ANIME_TITLE, currentAnime);
+        intent.putExtra(PERSON_NAME, currentPerson);
+        return intent;
     }
 
 }
