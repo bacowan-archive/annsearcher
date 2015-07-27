@@ -1,7 +1,7 @@
 package moe.cowan.b.annsearcher.backend.database;
 
 import moe.cowan.b.annsearcher.exceptions.TitleNotFoundException;
-import moe.cowan.b.annsearcher.backend.Id;
+import moe.cowan.b.annsearcher.backend.Ids.Id;
 import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
 
 /**

@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import moe.cowan.b.annsearcher.R;
 import moe.cowan.b.annsearcher.backend.Anime;
+import moe.cowan.b.annsearcher.backend.Person;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.utils.ClassWithItemClick;
 import moe.cowan.b.annsearcher.frontend.utils.StringSelectors.PersonRoleSearchItemStringSelector;
@@ -36,7 +39,8 @@ public class CharacterSearchActivity extends RoboFragmentActivity implements Cla
     private void initializeListItems() {
         SearchFragment frag = (SearchFragment) getSupportFragmentManager().findFragmentById(R.id.search_fragment);
         frag.setSearchItemStringSelector(new PersonRoleSearchItemStringSelector());
-        frag.setSearchItems(presenter.getAllCastOfAnime(anime.getId()));
+        Collection<Person> searchItems = presenter.getAllCastOfAnime(anime.getId());
+        frag.setSearchItems(new LinkedList<>(searchItems));
     }
 
     private void getMembersFromIntent() {

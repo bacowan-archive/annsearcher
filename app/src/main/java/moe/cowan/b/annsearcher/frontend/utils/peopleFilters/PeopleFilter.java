@@ -1,5 +1,6 @@
 package moe.cowan.b.annsearcher.frontend.utils.peopleFilters;
 
+import java.util.Collection;
 import java.util.List;
 
 import moe.cowan.b.annsearcher.backend.Person;
@@ -11,7 +12,7 @@ public abstract class PeopleFilter {
 
     private PeopleFilter _next;
 
-    public void filter(List<Person> persons) {
+    public void filter(Collection<Person> persons) {
         filterImplementation(persons);
         if (_next != null)
             _next.filter(persons);
@@ -21,6 +22,6 @@ public abstract class PeopleFilter {
         _next = next;
     }
 
-    protected abstract void filterImplementation(List<Person> persons);
+    protected abstract void filterImplementation(Collection<Person> persons);
 
 }

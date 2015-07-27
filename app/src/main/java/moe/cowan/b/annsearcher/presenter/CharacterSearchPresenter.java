@@ -2,9 +2,10 @@ package moe.cowan.b.annsearcher.presenter;
 
 import android.app.Application;
 
+import java.util.Collection;
 import java.util.List;
 
-import moe.cowan.b.annsearcher.backend.Id;
+import moe.cowan.b.annsearcher.backend.Ids.Id;
 import moe.cowan.b.annsearcher.backend.Person;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.utils.peopleFilters.JapanesePeopleFilter;
@@ -28,8 +29,8 @@ public class CharacterSearchPresenter {
         peopleFilter = new JapanesePeopleFilter();
     }
 
-    public List<Person> getAllCastOfAnime(Id animeId) {
-        List<Person> allPeopleOfTitle = proxy.getPeopleOfTitle(animeId).getCast();
+    public Collection<Person> getAllCastOfAnime(Id animeId) {
+        Collection<Person> allPeopleOfTitle = proxy.getPeopleOfTitle(animeId).getCast();
         peopleFilter.filter(allPeopleOfTitle);
         return allPeopleOfTitle;
     }
