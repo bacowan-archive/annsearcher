@@ -1,9 +1,8 @@
 package moe.cowan.b.annsearcher.backend;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
+
+import moe.cowan.b.annsearcher.backend.Ids.Id;
 
 /**
  * Created by user on 04/07/2015.
@@ -12,6 +11,7 @@ public class Anime implements Serializable {
 
     private String title = "";
     private Id id = null;
+    private PeopleOfTitle peopleOfTitle = new PeopleOfTitle();
 
     public void setTitle(String title) {
         this.title = title;
@@ -25,31 +25,15 @@ public class Anime implements Serializable {
     public Id getId() {
         return id;
     }
+    public PeopleOfTitle getPeopleOfTitle() {
+        return peopleOfTitle;
+    }
+    public void setPeopleOfTitle(PeopleOfTitle peopleOfTitle) {
+        this.peopleOfTitle = peopleOfTitle;
+    }
 
     @Override
     public String toString() {
         return getTitle();
     }
-/*
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-    }
-
-    public static final Parcelable.Creator<Anime> CREATOR
-            = new Parcelable.Creator<Anime>() {
-        public Anime createFromParcel(Parcel in) {
-            return new Anime();
-        }
-
-        public Anime[] newArray(int size) {
-            return new Anime[size];
-        }
-    };
-    */
 }

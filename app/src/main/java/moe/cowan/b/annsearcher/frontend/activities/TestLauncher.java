@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import moe.cowan.b.annsearcher.backend.Anime;
-import moe.cowan.b.annsearcher.backend.Id;
+import moe.cowan.b.annsearcher.backend.Ids.Id;
 import moe.cowan.b.annsearcher.backend.Language;
 import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
 import moe.cowan.b.annsearcher.backend.Person;
