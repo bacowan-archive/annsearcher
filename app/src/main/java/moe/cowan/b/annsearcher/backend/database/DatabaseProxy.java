@@ -7,8 +7,4 @@ import android.os.Parcelable;
  * Created by user on 04/07/2015.
  */
 public interface DatabaseProxy extends Parcelable, DatabaseListProxy, DatabaseInfoProxy {
-
-    void setUsername(String username);
-    void setContext(Context context);
-
 }

@@ -98,7 +98,7 @@ public class AnimeListFragment extends RoboFragment implements Observer {
         private List<Anime> animes;
 
         public AnimeListAdapter(Collection<Anime> animes) {
-            this.animes = new ArrayList(animes);
+            this.animes = new ArrayList<>(animes);
         }
 
         @Override

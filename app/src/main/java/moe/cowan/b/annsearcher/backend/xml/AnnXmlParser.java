@@ -22,7 +22,7 @@ import moe.cowan.b.annsearcher.backend.Person;
 /**
  * Created by user on 26/07/2015.
  */
-public class AnnXmlParser {
+public class AnnXmlParser implements XmlParser<List<Anime>> {
     // We don't use namespaces
     private static final String ns = null;
     private StringIdSetter idSetter = new StringIdSetter(StringIdKey.ANN);

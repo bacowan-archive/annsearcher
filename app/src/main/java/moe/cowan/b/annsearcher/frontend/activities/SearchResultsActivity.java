@@ -21,6 +21,7 @@ import moe.cowan.b.annsearcher.backend.Person;
 import moe.cowan.b.annsearcher.backend.database.AnimeCrossreferencer;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.fragments.VoiceSearchFragment;
+import moe.cowan.b.annsearcher.presenter.SearchResultsPresenter;
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
