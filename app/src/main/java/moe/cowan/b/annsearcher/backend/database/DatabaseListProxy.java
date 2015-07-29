@@ -1,5 +1,7 @@
 package moe.cowan.b.annsearcher.backend.database;
 
+import android.content.Context;
+
 import java.util.Collection;
 
 import moe.cowan.b.annsearcher.backend.Anime;
@@ -9,5 +11,7 @@ import moe.cowan.b.annsearcher.backend.Anime;
  */
 public interface DatabaseListProxy {
     Collection<Anime> getAllSeenAnime();
+    void setUsername(String username);
+    void setContext(Context context);
     void resync();
 }
