@@ -46,7 +46,7 @@ public class TestLauncher extends LauncherActivity {
 
         private class MockCrossref extends AnimeCrossreferencer {
             @Override
-            public Map<Anime, Collection<String>> getOtherCharactersActedBy(Person person, DatabaseProxy databaseProxy) {
+            public Map<Anime, Collection<String>> getOtherCharactersActedBy(Collection<Anime> otherAnime, Person person) {
                 Map<Anime, Collection<String>> returnVal = new HashMap<>();
                 Anime anime1 = new Anime();
                 anime1.setTitle("An Anime");
@@ -72,6 +72,11 @@ public class TestLauncher extends LauncherActivity {
         @Override
         public void setUsername(String username) {
 
+        }
+
+        @Override
+        public String getUsername() {
+            return "";
         }
 
         @Override

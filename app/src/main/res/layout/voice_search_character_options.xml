@@ -17,7 +17,6 @@
             android:editable="false"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Item 1"
             android:paddingTop="20dp"/>
         <Button
             android:id="@+id/search_anime_button"

@@ -1,5 +1,6 @@
 package moe.cowan.b.annsearcher;
 
+import moe.cowan.b.annsearcher.backend.database.AnnMalDatabaseProxy;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.activities.LauncherActivity;
 
@@ -9,6 +10,6 @@ import moe.cowan.b.annsearcher.frontend.activities.LauncherActivity;
 public class StandardLauncher extends LauncherActivity {
     @Override
     protected DatabaseProxy getDatabaseProxy() {
-        return null;
+        return new AnnMalDatabaseProxy();
     }
 }

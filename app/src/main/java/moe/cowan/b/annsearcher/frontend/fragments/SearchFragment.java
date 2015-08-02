@@ -60,7 +60,6 @@ public class SearchFragment extends RoboFragment {
      * @param dispList
      */
     private void refreshList(List<? extends Serializable> dispList) {
-        List<String> dispListStrings = new ArrayList<>();
         ArrayAdapter adapter = new StringSelectorArrayAdapter(searchItemStringSelector, getActivity(), android.R.layout.simple_list_item_1, dispList);
         listView.setAdapter(adapter);
     }

@@ -28,6 +28,11 @@ public class BasicRequestGetter implements RequestGetter {
     }
 
     @Override
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    @Override
     public String getRequestByUrl(String url) throws ExecutionException, InterruptedException, TimeoutException {
         RequestFuture<String> future = RequestFuture.newFuture();
         StringRequest request = new StringRequest(Request.Method.GET,  url, future, future);

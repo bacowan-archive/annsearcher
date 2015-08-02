@@ -11,6 +11,13 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".StandardLauncher">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".frontend.activities.AnimeSearchActivity"/>
         <activity android:name=".frontend.activities.CharacterSearchActivity"/>
         <activity android:name=".frontend.activities.LoginActivity"/>

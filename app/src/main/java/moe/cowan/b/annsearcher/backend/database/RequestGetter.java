@@ -1,5 +1,7 @@
 package moe.cowan.b.annsearcher.backend.database;
 
+import android.content.Context;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -9,5 +11,6 @@ import java.util.concurrent.TimeoutException;
 public interface RequestGetter {
 
     String getRequestByUrl(String url) throws ExecutionException, InterruptedException, TimeoutException;
+    void setContext(Context context);
 
 }

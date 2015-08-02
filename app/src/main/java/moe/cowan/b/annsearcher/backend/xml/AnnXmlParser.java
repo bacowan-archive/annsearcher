@@ -5,8 +5,10 @@ import android.util.Xml;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,10 @@ public class AnnXmlParser implements XmlParser<List<Anime>> {
     // We don't use namespaces
     private static final String ns = null;
     private StringIdSetter idSetter = new StringIdSetter(StringIdKey.ANN);
+
+    public List<Anime> parse(String xml) throws XmlPullParserException, IOException {
+        return parse(new ByteArrayInputStream(xml.getBytes(Charset.forName("UTF-8"))));
+    }
 
     public List<Anime> parse(InputStream in) throws XmlPullParserException, IOException {
         try {

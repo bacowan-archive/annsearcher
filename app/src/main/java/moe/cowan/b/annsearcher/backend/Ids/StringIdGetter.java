@@ -12,7 +12,7 @@ public class StringIdGetter {
     }
 
     public String getStringId(Id id) {
-        return id.getId(stringIdKey);
+        return id.getString(stringIdKey);
     }
 
 }

@@ -12,6 +12,7 @@ import moe.cowan.b.annsearcher.backend.Anime;
 public interface DatabaseListProxy {
     Collection<Anime> getAllSeenAnime();
     void setUsername(String username);
+    String getUsername();
     void setContext(Context context);
     void resync();
 }
