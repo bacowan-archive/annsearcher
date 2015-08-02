@@ -14,7 +14,7 @@ public class StringIdSetterTest extends TestCase {
 
         setter.setString(id, stringId);
 
-        assertEquals(stringId, id.getId(StringIdKey.MAL));
+        assertEquals(stringId, id.getString(StringIdKey.MAL));
     }
 
     public void testSetAnnId_AlsoSetsInternalId() {
@@ -24,7 +24,7 @@ public class StringIdSetterTest extends TestCase {
 
         setter.setString(id, stringId);
 
-        assertEquals(stringId, id.getId(StringIdKey.INTERNAL));
+        assertEquals(stringId, id.getString(StringIdKey.INTERNAL));
     }
 
 }

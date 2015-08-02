@@ -50,16 +50,4 @@ public class Person implements Serializable {
     public String toString() {
         return getName();
     }
-
-    /*@Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Person))
-            return false;
-        return this.getId() == ((Person) obj).getId();
-    }
-
-    @Override
-    public int hashCode() {
-        return this.getId().hashCode();
-    }*/
 }

@@ -10,13 +10,13 @@ public class IdTest extends TestCase {
     public void testConstructorSetsInternalId() {
         String stringId = "123";
         Id id = new Id(stringId);
-        assertEquals(stringId, id.getId(StringIdKey.INTERNAL));
+        assertEquals(stringId, id.getString(StringIdKey.INTERNAL));
     }
 
     public void testInternalIdStartsAsBlank() {
         Id id1 = new Id();
 
-        assertEquals(id1.getId(StringIdKey.INTERNAL), "");
+        assertEquals(id1.getString(StringIdKey.INTERNAL), "");
     }
 
     public void testEmptyInternalStringsNotEqual() {

@@ -1,5 +1,6 @@
 package moe.cowan.b.annsearcher.frontend.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.google.inject.Inject;
 
+import java.io.ObjectInput;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +23,7 @@ import moe.cowan.b.annsearcher.backend.Person;
 import moe.cowan.b.annsearcher.backend.database.AnimeCrossreferencer;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.fragments.VoiceSearchFragment;
+import moe.cowan.b.annsearcher.frontend.utils.Observer;
 import moe.cowan.b.annsearcher.presenter.SearchResultsPresenter;
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.ContentView;
@@ -30,14 +33,21 @@ import roboguice.inject.InjectView;
  * Created by user on 25/07/2015.
  */
 @ContentView(R.layout.search_results_view)
-public class SearchResultsActivity extends RoboFragmentActivity {
+public class SearchResultsActivity extends RoboFragmentActivity implements Observer {
 
     @InjectView(R.id.search_result_table) TableLayout table;
     @InjectView(R.id.actor_name_title) TextView actor_name_title;
     @Inject AnimeCrossreferencer crossRef;
+    private SearchResultsPresenter presenter;
+    private Person displayPerson;
+
 
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        displayPerson = (Person) intent.getSerializableExtra(VoiceSearchFragment.PERSON_NAME);
+        DatabaseProxy proxy = intent.getParcelableExtra(LauncherActivity.DATABASE_PARCELABLE_NAME);
+        presenter = new SearchResultsPresenter(proxy, crossRef, this, displayPerson, this);
         displayItems();
     }
 
@@ -48,12 +58,7 @@ public class SearchResultsActivity extends RoboFragmentActivity {
     }
 
     private void displayItems() {
-        Bundle bun = getIntent().getExtras();
-        DatabaseProxy proxy = bun.getParcelable(LauncherActivity.DATABASE_PARCELABLE_NAME);
-        Person person = (Person) bun.getSerializable(VoiceSearchFragment.PERSON_NAME);
-        Map<Anime, Collection<String>> otherCharactersByAnime = crossRef.getOtherCharactersActedBy(person, proxy);
-        displayOtherCharactersByAnime(otherCharactersByAnime);
-        actor_name_title.setText(person.getName());
+        presenter.getOtherCharactersActedBy();
     }
 
     private void displayOtherCharactersByAnime(Map<Anime, Collection<String>> otherCharactersByAnime) {
@@ -76,4 +81,10 @@ public class SearchResultsActivity extends RoboFragmentActivity {
         table.addView(animeRow);
     }
 
+    @Override
+    public void notify(Object arg) {
+        Map<Anime, Collection<String>> otherCharactersByAnime =(Map<Anime, Collection<String>>) arg;
+        displayOtherCharactersByAnime(otherCharactersByAnime);
+        actor_name_title.setText(displayPerson.getName());
+    }
 }

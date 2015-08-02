@@ -11,5 +11,6 @@ import java.io.InputStream;
 public interface XmlParser<OutputType> {
 
     OutputType parse(InputStream in) throws XmlPullParserException, IOException;
+    OutputType parse(String xml) throws XmlPullParserException, IOException;
 
 }

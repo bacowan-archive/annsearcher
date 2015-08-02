@@ -23,7 +23,7 @@ public class Id implements Serializable {
         ids.put(key,id);
     }
 
-    public String getId(StringIdKey key) {
+    public String getString(StringIdKey key) {
         return ids.get(key);
     }
 
@@ -31,14 +31,14 @@ public class Id implements Serializable {
     public boolean equals(Object obj) {
         if (!(obj instanceof Id))
             return false;
-        if (ids.get(StringIdKey.INTERNAL).equals("") || ((Id)obj).getId(StringIdKey.INTERNAL).equals(""))
+        if (ids.get(StringIdKey.INTERNAL).equals("") || ((Id)obj).getString(StringIdKey.INTERNAL).equals(""))
             return false;
-        return ids.get(StringIdKey.INTERNAL).equals(((Id)obj).getId(StringIdKey.INTERNAL));
+        return ids.get(StringIdKey.INTERNAL).equals(((Id)obj).getString(StringIdKey.INTERNAL));
     }
 
     @Override
     public String toString() {
-        return getId(StringIdKey.INTERNAL);
+        return getString(StringIdKey.INTERNAL);
     }
 
 }

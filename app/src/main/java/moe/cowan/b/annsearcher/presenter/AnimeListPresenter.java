@@ -23,17 +23,11 @@ public class AnimeListPresenter implements Presenter {
         alFrag = frag;
         this.proxy = proxy;
         this.proxy.setContext(app);
-        RefreshTask rt = new RefreshTask();
-        rt.execute();
     }
 
     public void fillList() {
-        try {
-            proxy.getAllSeenAnime();
-        } catch (Exception e) {
-            // TODO: properly handle these exceptions
-            Log.e("", "initialize anime list controller error", e);
-        }
+        RefreshTask rt = new RefreshTask();
+        rt.execute();
     }
 
     private class RefreshTask extends AsyncTask<Void,Void,Collection<Anime>> {

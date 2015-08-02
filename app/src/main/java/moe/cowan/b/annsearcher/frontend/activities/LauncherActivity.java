@@ -1,13 +1,10 @@
 package moe.cowan.b.annsearcher.frontend.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import moe.cowan.b.annsearcher.R;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import roboguice.activity.RoboActivity;
-import roboguice.inject.ContentView;
 
 /**
  * Created by user on 17/07/2015.
@@ -26,7 +23,7 @@ public abstract class LauncherActivity extends RoboActivity {
     private void startInitialScreen(DatabaseProxy database) {
         // TODO: if the user has logged in before, don't start the login activity.
         Intent intent = new Intent(this, LoginActivity.class);
-        intent.putExtra(DATABASE_PARCELABLE_NAME,database);
+        intent.putExtra(DATABASE_PARCELABLE_NAME, database);
         startActivity(intent);
     }
 
