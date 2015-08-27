@@ -14,6 +14,7 @@ import moe.cowan.b.annsearcher.R;
 import moe.cowan.b.annsearcher.backend.Anime;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.utils.Observer;
+import moe.cowan.b.annsearcher.frontend.utils.Searchers.MalAnimeSearch;
 import moe.cowan.b.annsearcher.frontend.utils.StringSelectors.AnimeTitleStringSelector;
 import moe.cowan.b.annsearcher.frontend.utils.ClassWithItemClick;
 import moe.cowan.b.annsearcher.frontend.fragments.SearchFragment;
@@ -33,19 +34,21 @@ public class AnimeSearchActivity extends RoboFragmentActivity implements ClassWi
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
-        getMembersFromIntent();
-        initializeListItems();
+        Bundle bun = getIntent().getExtras();
+        DatabaseProxy proxy = bun.getParcelable(LauncherActivity.DATABASE_PARCELABLE_NAME);
+        getMembersFromIntent(proxy);
+        initializeListItems(proxy);
     }
 
-    private void initializeListItems() {
+    private void initializeListItems(DatabaseProxy proxy) {
         frag = (SearchFragment) getSupportFragmentManager().findFragmentById(R.id.search_fragment);
         frag.setSearchItemStringSelector(new AnimeTitleStringSelector());
+        frag.setPresenter(presenter);
+        presenter.setSearchCallback(new MalAnimeSearch(proxy));
         presenter.loadAllSeenAnime();
     }
 
-    private void getMembersFromIntent() {
-        Bundle bun = getIntent().getExtras();
-        DatabaseProxy proxy = bun.getParcelable(LauncherActivity.DATABASE_PARCELABLE_NAME);
+    private void getMembersFromIntent(DatabaseProxy proxy) {
         presenter = new AnimeSearchPresenter(proxy, getApplication(), this);
     }
 

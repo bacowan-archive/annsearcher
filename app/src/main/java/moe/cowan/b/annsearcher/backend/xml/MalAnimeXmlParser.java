@@ -8,7 +8,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +24,7 @@ import moe.cowan.b.annsearcher.backend.WatchingStatus;
 /**
  * Created by user on 01/08/2015.
  */
-public class MalXmlParser implements XmlParser<List<Anime>> {
+public class MalAnimeXmlParser implements XmlParser<List<Anime>> {
     // We don't use namespaces
     private static final String ns = null;
     private StringIdSetter idSetter = new StringIdSetter(StringIdKey.MAL);
@@ -50,14 +49,14 @@ public class MalXmlParser implements XmlParser<List<Anime>> {
 
         List<Anime> entries = new ArrayList<>();
 
-        parser.require(XmlPullParser.START_TAG, ns, "myanimelist");
+        parser.require(XmlPullParser.START_TAG, ns, "anime");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG)
                 continue;
             String name = parser.getName();
 
-            if (name.equals("anime")) {
-                entries.add(readAnime(parser));
+            if (name.equals("entry")) {
+                entries.add(readEntry(parser));
             } else {
                 skip(parser);
             }
@@ -82,8 +81,8 @@ public class MalXmlParser implements XmlParser<List<Anime>> {
         }
     }
 
-    public Anime readAnime(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "anime");
+    public Anime readEntry(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, ns, "entry");
 
         Anime anime = new Anime();
 
@@ -92,14 +91,12 @@ public class MalXmlParser implements XmlParser<List<Anime>> {
                 continue;
             }
             String name = parser.getName();
-            if (name.equals("series_title")) {
+            if (name.equals("title")) {
                 anime.setTitle(readTitle(parser));
-            } else if (name.equals("series_animedb_id")) {
+            } else if (name.equals("id")) {
                 anime.setId(readId(parser));
-            } else if (name.equals("series_synonyms")) {
+            } else if (name.equals("synonyms")) {
                 anime.setSynonyms(readSynonyms(parser));
-            } else if (name.equals("my_status")) {
-                anime.setStatus(readStatus(parser));
             } else {
                 skip(parser);
             }
@@ -109,25 +106,25 @@ public class MalXmlParser implements XmlParser<List<Anime>> {
     }
 
     private String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "series_title");
+        parser.require(XmlPullParser.START_TAG, ns, "title");
         String title = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, "series_title");
+        parser.require(XmlPullParser.END_TAG, ns, "title");
         return title;
     }
 
     private Id readId(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "series_animedb_id");
+        parser.require(XmlPullParser.START_TAG, ns, "id");
         String idStr = readText(parser);
         Id id = new Id();
         idSetter.setString(id, idStr);
-        parser.require(XmlPullParser.END_TAG, ns, "series_animedb_id");
+        parser.require(XmlPullParser.END_TAG, ns, "id");
         return id;
     }
 
     private Collection<String> readSynonyms(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "series_synonyms");
+        parser.require(XmlPullParser.START_TAG, ns, "synonyms");
         String unparsedSynonyms = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, "series_synonyms");
+        parser.require(XmlPullParser.END_TAG, ns, "synonyms");
         return parseSynonyms(unparsedSynonyms);
     }
 
@@ -136,13 +133,6 @@ public class MalXmlParser implements XmlParser<List<Anime>> {
         if (parsedSynonyms.contains(""))
             parsedSynonyms.remove("");
         return parsedSynonyms;
-    }
-
-    private WatchingStatus readStatus(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "my_status");
-        int intStatus = Integer.parseInt(readText(parser));
-        parser.require(XmlPullParser.END_TAG, ns, "my_status");
-        return WatchingStatus.intToStatus(intStatus);
     }
 
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {

@@ -27,6 +27,7 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
     public AnnMalDatabaseProxy(Parcel in) {
         this();
         setUsername(in.readString());
+        setPassword(in.readString());
     }
 
     @Override
@@ -44,6 +45,11 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
     @Override
     public void setUsername(String username) {
         malDatabaseProxy.setUsername(username);
+    }
+
+    @Override
+    public void setPassword(String password) {
+        malDatabaseProxy.setPassword(password);
     }
 
     @Override
@@ -70,6 +76,14 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(getUsername());
+        dest.writeString(malDatabaseProxy.getPassword());
+    }
+
+    @Override
+    public Collection<Anime> searchAnime(String searchString) {
+        Collection<Anime> searchResults = malDatabaseProxy.searchAnime(searchString);
+        annDatabaseProxy.getAnnIdsForAnime(searchResults);
+        return searchResults;
     }
 
     public static final Parcelable.Creator<AnnMalDatabaseProxy> CREATOR =

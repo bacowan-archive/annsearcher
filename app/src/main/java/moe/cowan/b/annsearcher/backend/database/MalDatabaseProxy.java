@@ -11,8 +11,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import moe.cowan.b.annsearcher.backend.Anime;
-import moe.cowan.b.annsearcher.backend.Ids.Id;
-import moe.cowan.b.annsearcher.backend.xml.MalXmlParser;
+import moe.cowan.b.annsearcher.backend.xml.MalAnimeXmlParser;
+import moe.cowan.b.annsearcher.backend.xml.MalListXmlParser;
 import moe.cowan.b.annsearcher.backend.xml.XmlParser;
 import moe.cowan.b.annsearcher.exceptions.DatabaseRuntimeException;
 import moe.cowan.b.annsearcher.exceptions.XmlParserException;
@@ -20,42 +20,47 @@ import moe.cowan.b.annsearcher.exceptions.XmlParserException;
 /**
  * Created by user on 01/08/2015.
  */
-public class MalDatabaseProxy implements DatabaseListProxy {
+public class MalDatabaseProxy implements DatabaseListProxy, DatabaseSearchProxy {
 
     private String username = "";
-    private Context context;
+    private String password = "";
     private RequestGetter requestGetter;
-    private XmlParser<List<Anime>> xmlParser;
+    private AuthenticatedRequestGetter authenticatedRequestGetter;
+    private XmlParser<List<Anime>> malListXmlParser;
+    private XmlParser<List<Anime>> malAnimeXmlParser;
 
     public MalDatabaseProxy() {
-        this(null,null);
+        this(null,null,null);
     }
 
-    public MalDatabaseProxy(String username, Context context) {
-        this(new BasicRequestGetter(context), new MalXmlParser(), username);
+    public MalDatabaseProxy(String username, String password, Context context) {
+        this(new BasicRequestGetter(context), new AuthenticatedRequestGetter(context), new MalListXmlParser(), new MalAnimeXmlParser(), username, password);
     }
 
-    public MalDatabaseProxy(RequestGetter getter, XmlParser<List<Anime>> parser, String username) {
+    public MalDatabaseProxy(RequestGetter getter, AuthenticatedRequestGetter authenticatedGetter, XmlParser<List<Anime>> malListParser, XmlParser<List<Anime>> malAnimeXmlParser, String username, String password) {
         this.requestGetter = getter;
-        this.xmlParser = parser;
+        this.authenticatedRequestGetter = authenticatedGetter;
+        this.malListXmlParser = malListParser;
+        this.malAnimeXmlParser = malAnimeXmlParser;
         this.username = username;
+        this.password = password;
     }
 
     @Override
     public Collection<Anime> getAllSeenAnime() {
-        String xml = getResponse(username);
+        String xml = getListResponse();
         return parseAnimeResponse(xml);
     }
 
     private Collection<Anime> parseAnimeResponse(String xml) {
         try {
-            return xmlParser.parse(xml);
-        } catch (XmlPullParserException |IOException e) {
+            return malListXmlParser.parse(xml);
+        } catch (XmlPullParserException | IOException e) {
             throw new XmlParserException(e);
         }
     }
 
-    private String getResponse(String username) {
+    private String getListResponse() {
         try {
             return requestGetter.getRequestByUrl("http://myanimelist.net/malappinfo.php?u=" + username + "&status=all&type=anime");
         } catch (ExecutionException |InterruptedException|TimeoutException e) {
@@ -76,10 +81,39 @@ public class MalDatabaseProxy implements DatabaseListProxy {
     @Override
     public void setContext(Context context) {
         requestGetter.setContext(context);
+        authenticatedRequestGetter.setContext(context);
+    }
+
+    @Override
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     @Override
     public void resync() {
 
     }
+
+    @Override
+    public Collection<Anime> searchAnime(String searchString) {
+        try {
+            String response = getSearchResponse(searchString);
+            return malAnimeXmlParser.parse(response);
+        } catch (XmlPullParserException | IOException e) {
+            throw new XmlParserException(e);
+        }
+    }
+
+    private String getSearchResponse(String query) {
+        try {
+            return authenticatedRequestGetter.getRequestByUrl("http://myanimelist.net/api/anime/search.xml?q=" + query, username, password);
+        } catch (ExecutionException |InterruptedException|TimeoutException e) {
+            throw new DatabaseRuntimeException(e);
+        }
+    }
+
 }

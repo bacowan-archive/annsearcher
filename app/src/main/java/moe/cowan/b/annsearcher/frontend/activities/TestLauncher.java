@@ -75,6 +75,11 @@ public class TestLauncher extends LauncherActivity {
         }
 
         @Override
+        public void setPassword(String password) {
+
+        }
+
+        @Override
         public String getUsername() {
             return "";
         }
@@ -135,6 +140,11 @@ public class TestLauncher extends LauncherActivity {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
 
+        }
+
+        @Override
+        public Collection<Anime> searchAnime(String searchString) {
+            return new ArrayList<>();
         }
 
         public static final Parcelable.Creator<MockDatabaseProxy> CREATOR =
