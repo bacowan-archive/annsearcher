@@ -22,19 +22,28 @@ public class MalDatabaseProxyTest extends InstrumentationTestCase {
 
     private MalDatabaseProxy proxy;
     private RequestGetter getter;
-    private XmlParser<List<Anime>> parser;
+    private XmlParser<List<Anime>> listParser;
+    private XmlParser<List<Anime>> animeParser;
     private String username = "DoomInAJar";
 
     public void setUp() throws Exception {
         getter = mock(RequestGetter.class);
-        parser = mock(XmlParser.class);
-        proxy = new MalDatabaseProxy(getter, parser, username);
+        listParser = mock(XmlParser.class);
+        animeParser = mock(XmlParser.class);
+        proxy = new MalDatabaseProxy(getter, listParser, animeParser, username);
     }
 
     public void testBasicGetCallsCorrectUrl() throws Exception {
         proxy.getAllSeenAnime();
 
         verify(getter, times(1)).getRequestByUrl("http://myanimelist.net/malappinfo.php?u=" + username + "&status=all&type=anime");
+    }
+
+    public void testSearchCorrectUrl() throws Exception {
+        proxy.getAllSeenAnime();
+        String searchQuery = "fullmetal";
+
+        verify(getter, times(1)).getRequestByUrl("http://myanimelist.net/api/anime|manga/search.xml?q=" + searchQuery);
     }
 
 }

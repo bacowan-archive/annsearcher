@@ -6,5 +6,5 @@ import android.os.Parcelable;
 /**
  * Created by user on 04/07/2015.
  */
-public interface DatabaseProxy extends DatabaseListProxy, DatabaseInfoProxy, Parcelable {
+public interface DatabaseProxy extends DatabaseListProxy, DatabaseInfoProxy, DatabaseSearchProxy, Parcelable {
 }

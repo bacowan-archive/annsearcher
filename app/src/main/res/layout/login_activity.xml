@@ -24,6 +24,14 @@
                 android:id="@+id/username"
                 android:hint="username"/>
 
+            <EditText
+                android:text="4cb579"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:id="@+id/password"
+                android:hint="password"/>
+
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

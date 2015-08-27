@@ -16,7 +16,6 @@ import java.util.List;
 public class StringSelectorArrayAdapter extends ArrayAdapter {
 
     private Context context;
-    private int layoutResourceId;
     private List<? extends Serializable> objects;
 
     private SearchItemStringSelector stringSelector;
@@ -24,7 +23,6 @@ public class StringSelectorArrayAdapter extends ArrayAdapter {
     public StringSelectorArrayAdapter(SearchItemStringSelector stringSelector, Context context, int resource, List<? extends Serializable> objects) {
         super(context, resource, objects);
         this.context = context;
-        this.layoutResourceId = resource;
         this.objects = objects;
         this.stringSelector = stringSelector;
     }

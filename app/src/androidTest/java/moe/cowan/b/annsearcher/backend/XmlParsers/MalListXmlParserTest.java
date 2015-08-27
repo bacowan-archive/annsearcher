@@ -7,34 +7,34 @@ import java.util.Collection;
 
 import moe.cowan.b.annsearcher.backend.Anime;
 import moe.cowan.b.annsearcher.backend.Ids.StringIdKey;
-import moe.cowan.b.annsearcher.backend.xml.MalXmlParser;
+import moe.cowan.b.annsearcher.backend.xml.MalListXmlParser;
 
 /**
  * Created by user on 01/08/2015.
  */
-public class MalXmlParserTest extends InstrumentationTestCase {
+public class MalListXmlParserTest extends InstrumentationTestCase {
 
-    private MalXmlParser parser;
+    private MalListXmlParser parser;
 
     public void setUp() throws Exception {
-        parser = new MalXmlParser();
+        parser = new MalListXmlParser();
     }
 
     public void testValidSingleAnimeParse() throws Exception {
         InputStream exampleAnimeInput = getMalExampleInputStream();
         Anime parsedAnime = parser.parse(exampleAnimeInput).get(0);
-        assertAnimeAreRecursivelyEqual(MalExampleAnimeBuilder.buildAnime(), parsedAnime);
+        assertAnimeAreRecursivelyEqual(MalExampleAnimeBuilder.buildAnimeFromListExample(), parsedAnime);
     }
 
     public void testParseSynonymsWithSemicolonInTitle() throws Exception {
         String xmlSysonyms = "; Steins;Gate";
-        Collection<String> parsedSynonyms = MalXmlParser.parseSynonyms(xmlSysonyms);
+        Collection<String> parsedSynonyms = MalListXmlParser.parseSynonyms(xmlSysonyms);
         assertEquals(1, parsedSynonyms.size());
         assertEquals("Steins;Gate", parsedSynonyms.toArray()[0]);
     }
 
     private InputStream getMalExampleInputStream() throws Exception {
-        return getInstrumentation().getContext().getResources().getAssets().open("malExample.xml");
+        return getInstrumentation().getContext().getResources().getAssets().open("malListExample.xml");
     }
 
     private void assertAnimeAreRecursivelyEqual(Anime expectedAnime, Anime anime2) {

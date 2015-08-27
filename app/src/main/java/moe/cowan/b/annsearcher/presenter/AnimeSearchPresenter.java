@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -12,6 +13,7 @@ import java.util.List;
 import moe.cowan.b.annsearcher.backend.Anime;
 import moe.cowan.b.annsearcher.backend.database.DatabaseProxy;
 import moe.cowan.b.annsearcher.frontend.activities.AnimeSearchActivity;
+import moe.cowan.b.annsearcher.frontend.utils.Searchers.SearchCallback;
 
 /**
  * Created by user on 04/07/2015.
@@ -20,6 +22,8 @@ public class AnimeSearchPresenter {
 
     private DatabaseProxy proxy;
     private AnimeSearchActivity activity;
+    private SearchCallback searchCallback;
+
 
     public AnimeSearchPresenter(DatabaseProxy proxy, Application app, AnimeSearchActivity activity) {
         this.proxy = proxy;
@@ -45,6 +49,34 @@ public class AnimeSearchPresenter {
 
         @Override
         protected void onPostExecute(Collection<Anime> result) {
+            sendNotification(result);
+        }
+    }
+
+    public void setSearchCallback(SearchCallback searchCallback) {
+        this.searchCallback = searchCallback;
+    }
+
+    public void search(String query) {
+        SearchTask rt = new SearchTask(query);
+        rt.execute();
+    }
+
+    private class SearchTask extends AsyncTask<Void,Void,List<? extends Serializable>> {
+
+        private String query;
+
+        public SearchTask(String query) {
+            this.query = query;
+        }
+
+        @Override
+        protected List<? extends Serializable> doInBackground(Void... params) {
+            return new ArrayList<>(searchCallback.search(query));
+        }
+
+        @Override
+        protected void onPostExecute(List<? extends Serializable> result) {
             sendNotification(result);
         }
     }
