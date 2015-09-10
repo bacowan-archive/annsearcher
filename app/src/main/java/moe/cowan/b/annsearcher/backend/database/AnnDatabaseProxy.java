@@ -30,6 +30,7 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
 
     private RequestGetter requestGetter;
     private XmlParser<List<Anime>> xmlParser;
+    private InternalDatabaseProxy internalProxy;
     private static final StringIdGetter idGetter = new StringIdGetter(StringIdKey.ANN);
     private static final StringIdSetter idSetter = new StringIdSetter(StringIdKey.ANN);
 
