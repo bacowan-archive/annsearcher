@@ -40,4 +40,8 @@ public class AnnDatabaseProxyTest extends InstrumentationTestCase {
         verify(getter, times(1)).getRequestByUrl("http://cdn.animenewsnetwork.com/encyclopedia/api.xml?anime=" + idString);
     }
 
+    public void testGetAllPeopleOfTitle_firstChecksInternalDB() throws Exception {
+
+    }
+
 }

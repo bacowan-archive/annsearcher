@@ -3,8 +3,6 @@ package moe.cowan.b.annsearcher.presenter;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.google.inject.Inject;
-
 import java.util.Collection;
 import java.util.Map;
 
