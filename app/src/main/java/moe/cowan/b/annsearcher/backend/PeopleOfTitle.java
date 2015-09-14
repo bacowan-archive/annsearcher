@@ -16,6 +16,15 @@ public class PeopleOfTitle implements Serializable {
     private Collection<Person> staff = new ArrayList<>();
     private Collection<Person> cast = new ArrayList<>();
 
+    public PeopleOfTitle() {
+
+    }
+
+    public PeopleOfTitle(Collection<Person> staff, Collection<Person> cast) {
+        this.staff = staff;
+        this.cast = cast;
+    }
+
     public void setStaff(Collection<Person> staff) {
         this.staff = staff;
     }

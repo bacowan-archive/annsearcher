@@ -18,36 +18,36 @@ import static junit.framework.Assert.*;
  */
 public class Utils {
 
-    private static final String TEST_ANIME_TITLE = "anime_title";
-    private static final String TEST_ANIME_SYNONYM_1 = "a";
-    private static final String TEST_ANIME_SYNONYM_2 = "b";
-    private static final WatchingStatus TEST_ANIME_WATCHING_STATUS = WatchingStatus.WATCHING;
-    private static final String INTERNAL_ID = "0";
-    private static final String ANN_ID = "1";
-    private static final String MAL_ID = "2";
-    private static final Id TEST_ANIME_ID;
-    private static final Person CAST1;
-    private static final String CAST1_ID_STR = "3";
-    private static final Id CAST1_ID = new Id(CAST1_ID_STR);
-    private static final String CAST1_ROLE = "character1";
-    private static final Language CAST1_LANGUAGE = Language.ENGLISH;
-    private static final String CAST1_NAME = "person1";
-    private static final Person CAST2;
-    private static final String CAST2_ID_STR = "4";
-    private static final Id CAST2_ID = new Id(CAST2_ID_STR);
-    private static final String CAST2_ROLE = "character2";
-    private static final Language CAST2_LANGUAGE = Language.JAPANESE;
-    private static final String CAST2_NAME = "person2";
-    private static final Person STAFF1;
-    private static final String STAFF1_ID_STR = "5";
-    private static final Id STAFF1_ID = new Id(STAFF1_ID_STR);
-    private static final String STAFF1_ROLE = "staff1";
-    private static final String STAFF1_NAME = "person3";
-    private static final Person STAFF2;
-    private static final String STAFF2_ID_STR = "6";
-    private static final Id STAFF2_ID = new Id(STAFF2_ID_STR);
-    private static final String STAFF2_ROLE = "staff2";
-    private static final String STAFF2_NAME = "person4";
+    public static final String TEST_ANIME_TITLE = "anime_title";
+    public static final String TEST_ANIME_SYNONYM_1 = "a";
+    public static final String TEST_ANIME_SYNONYM_2 = "b";
+    public static final WatchingStatus TEST_ANIME_WATCHING_STATUS = WatchingStatus.WATCHING;
+    public static final String INTERNAL_ID = "0";
+    public static final String ANN_ID = "1";
+    public static final String MAL_ID = "2";
+    public static final Id TEST_ANIME_ID;
+    public static final Person CAST1;
+    public static final String CAST1_ID_STR = "3";
+    public static final Id CAST1_ID = new Id(CAST1_ID_STR);
+    public static final String CAST1_ROLE = "character1";
+    public static final Language CAST1_LANGUAGE = Language.ENGLISH;
+    public static final String CAST1_NAME = "person1";
+    public static final Person CAST2;
+    public static final String CAST2_ID_STR = "4";
+    public static final Id CAST2_ID = new Id(CAST2_ID_STR);
+    public static final String CAST2_ROLE = "character2";
+    public static final Language CAST2_LANGUAGE = Language.JAPANESE;
+    public static final String CAST2_NAME = "person2";
+    public static final Person STAFF1;
+    public static final String STAFF1_ID_STR = "5";
+    public static final Id STAFF1_ID = new Id(STAFF1_ID_STR);
+    public static final String STAFF1_ROLE = "staff1";
+    public static final String STAFF1_NAME = "person3";
+    public static final Person STAFF2;
+    public static final String STAFF2_ID_STR = "6";
+    public static final Id STAFF2_ID = new Id(STAFF2_ID_STR);
+    public static final String STAFF2_ROLE = "staff2";
+    public static final String STAFF2_NAME = "person4";
 
     public static final Anime TEST_ANIME;
 
@@ -134,5 +134,49 @@ public class Utils {
         fail(person.toString() + " not found in anime");
         return null;
     }
+
+    public static Anime createBlankAnime() {
+        Anime anime = new Anime();
+        anime.setTitle("");
+        anime.setId(new Id());
+        anime.setPeopleOfTitle(new PeopleOfTitle());
+        anime.setSynonyms(new ArrayList<String>());
+        anime.setStatus(WatchingStatus.COMPLETED);
+        return anime;
+    }
+
+    public static void assertSynonymsAreCorrect(Collection<String> synonyms) {
+        assertEquals(2, synonyms.size());
+        assertTrue(synonyms.contains(TEST_ANIME_SYNONYM_1));
+        assertTrue(synonyms.contains(TEST_ANIME_SYNONYM_2));
+    }
+
+    public static void assertPeopleOfTitleAreCorrect(PeopleOfTitle peopleOfTitle) {
+        assertStaffOfTitleAreCorrect(peopleOfTitle.getStaff());
+        assertCastOfTitleAreCorrect(peopleOfTitle.getCast());
+    }
+
+    private static void assertStaffOfTitleAreCorrect(Collection<Person> staff) {
+        Collection<String> names = namesOfPeople(staff);
+        assertEquals(2, names.size());
+        assertTrue(names.contains(STAFF1_NAME));
+        assertTrue(names.contains(STAFF2_NAME));
+    }
+
+    private static void assertCastOfTitleAreCorrect(Collection<Person> cast) {
+        Collection<String> names = namesOfPeople(cast);
+        assertEquals(2, names.size());
+        assertTrue(names.contains(CAST1_NAME));
+        assertTrue(names.contains(CAST2_NAME));
+    }
+
+    private static Collection<String> namesOfPeople(Collection<Person> persons) {
+        Collection<String> names = new ArrayList<>();
+        for (Person p : persons) {
+            names.add(p.getName());
+        }
+        return names;
+    }
+
 
 }

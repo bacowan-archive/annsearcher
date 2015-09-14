@@ -8,6 +8,7 @@ import moe.cowan.b.annsearcher.frontend.activities.LauncherActivity;
  * Created by user on 18/07/2015.
  */
 public class StandardLauncher extends LauncherActivity {
+
     @Override
     protected DatabaseProxy getDatabaseProxy() {
         return new AnnMalDatabaseProxy();
