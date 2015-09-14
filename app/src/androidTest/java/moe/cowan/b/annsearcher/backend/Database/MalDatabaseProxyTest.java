@@ -31,6 +31,7 @@ public class MalDatabaseProxyTest extends InstrumentationTestCase {
     private String password = "password";
 
     public void setUp() throws Exception {
+        setupDexmaker();
         getter = mock(RequestGetter.class);
         authenticatedGetter = mock(AuthenticatedRequestGetter.class);
         listParser = mock(XmlParser.class);
@@ -38,17 +39,16 @@ public class MalDatabaseProxyTest extends InstrumentationTestCase {
         proxy = new MalDatabaseProxy(getter, authenticatedGetter, listParser, animeParser, username, password);
     }
 
+    private void setupDexmaker() {
+        System.setProperty(
+                "dexmaker.dexcache",
+                getInstrumentation().getTargetContext().getCacheDir().getPath());
+    }
+
     public void testBasicGetCallsCorrectUrl() throws Exception {
         proxy.getAllSeenAnime();
 
         verify(getter, times(1)).getRequestByUrl("http://myanimelist.net/malappinfo.php?u=" + username + "&status=all&type=anime");
-    }
-
-    public void testSearchCorrectUrl() throws Exception {
-        proxy.getAllSeenAnime();
-        String searchQuery = "fullmetal";
-
-        verify(getter, times(1)).getRequestByUrl("http://myanimelist.net/api/anime|manga/search.xml?q=" + searchQuery);
     }
 
 }

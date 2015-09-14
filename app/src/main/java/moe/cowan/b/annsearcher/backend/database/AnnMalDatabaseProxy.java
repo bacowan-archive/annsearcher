@@ -9,6 +9,7 @@ import java.util.Collection;
 import moe.cowan.b.annsearcher.backend.Anime;
 import moe.cowan.b.annsearcher.backend.Ids.Id;
 import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
+import moe.cowan.b.annsearcher.backend.database.internalDatabase.SqliteDatabaseProxy;
 import moe.cowan.b.annsearcher.exceptions.TitleNotFoundException;
 
 /**
@@ -18,14 +19,16 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
 
     private AnnDatabaseProxy annDatabaseProxy;
     private MalDatabaseProxy malDatabaseProxy;
+    private String internalDbName;
 
     public AnnMalDatabaseProxy() {
-        annDatabaseProxy = new AnnDatabaseProxy();
-        malDatabaseProxy = new MalDatabaseProxy();
+        this.annDatabaseProxy = new AnnDatabaseProxy();
+        this.malDatabaseProxy = new MalDatabaseProxy();
     }
 
     public AnnMalDatabaseProxy(Parcel in) {
         this();
+        internalDbName = in.readString();
         setUsername(in.readString());
         setPassword(in.readString());
     }
@@ -44,6 +47,7 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
 
     @Override
     public void setUsername(String username) {
+        internalDbName = "animeDatabase_" + username + ".db";
         malDatabaseProxy.setUsername(username);
     }
 
@@ -60,6 +64,7 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
     @Override
     public void setContext(Context context) {
         annDatabaseProxy.setContext(context);
+        annDatabaseProxy.setInternalProxy(new SqliteDatabaseProxy(context, internalDbName));
         malDatabaseProxy.setContext(context);
     }
 
@@ -75,6 +80,7 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(internalDbName);
         dest.writeString(getUsername());
         dest.writeString(malDatabaseProxy.getPassword());
     }

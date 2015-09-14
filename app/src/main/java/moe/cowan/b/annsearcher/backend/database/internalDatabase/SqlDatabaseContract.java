@@ -15,10 +15,9 @@ public final class SqlDatabaseContract {
 
         public static final String CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
-                        _ID + " INTEGER PRIMARY KEY, " +
+                        COLUMN_NAME_ID + " INTEGER PRIMARY KEY, " +
                         COLUMN_NAME_TITLE + " VARCHAR(255), " +
                         COLUMN_NAME_STATUS + " INTEGER, " +
-                        COLUMN_NAME_ID + " INTEGER, " +
                         "FOREIGN KEY(" + COLUMN_NAME_ID + ") REFERENCES " + IdDatabaseEntry.TABLE_NAME + "(" + IdDatabaseEntry.COLUMN_NAME_INTERNAL + ")" +
                 ")";
 
@@ -78,10 +77,10 @@ public final class SqlDatabaseContract {
 
         public static final String CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
-                        _ID + " INTEGER PRIMARY KEY, " +
                         COLUMN_NAME_ANIME + " INTEGER, " +
                         COLUMN_NAME_SYNONYM + " VARCHAR(255), " +
-                        "FOREIGN KEY(" + COLUMN_NAME_ANIME + ") REFERENCES " + AnimeDatabaseEntry.TABLE_NAME + "(" + AnimeDatabaseEntry._ID + ")" +
+                        "PRIMARY KEY(" + COLUMN_NAME_ANIME + ", " + COLUMN_NAME_SYNONYM + "), " +
+                        "FOREIGN KEY(" + COLUMN_NAME_ANIME + ") REFERENCES " + AnimeDatabaseEntry.TABLE_NAME + "(" + AnimeDatabaseEntry.COLUMN_NAME_ID + ")" +
                         ")";
 
         public static final String DELETE_ENTRIES =
@@ -95,10 +94,10 @@ public final class SqlDatabaseContract {
 
         public static final String CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
-                        _ID + " INTEGER PRIMARY KEY, " +
                         COLUMN_NAME_ANIME + " INTEGER, " +
                         COLUMN_NAME_CHARACTER + " INTEGER, " +
-                        "FOREIGN KEY(" + COLUMN_NAME_ANIME + ") REFERENCES " + AnimeDatabaseEntry.TABLE_NAME + "(" + AnimeDatabaseEntry._ID + "), " +
+                        "PRIMARY KEY(" + COLUMN_NAME_ANIME + ", " + COLUMN_NAME_CHARACTER + "), " +
+                        "FOREIGN KEY(" + COLUMN_NAME_ANIME + ") REFERENCES " + AnimeDatabaseEntry.TABLE_NAME + "(" + AnimeDatabaseEntry.COLUMN_NAME_ID + "), " +
                         "FOREIGN KEY(" + COLUMN_NAME_CHARACTER + ") REFERENCES " + CharacterDatabaseEntry.TABLE_NAME + "(" + CharacterDatabaseEntry._ID + ")" +
                         ")";
 
@@ -114,10 +113,10 @@ public final class SqlDatabaseContract {
 
         public static final String CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
-                        _ID + " INTEGER PRIMARY KEY," +
                         COLUMN_NAME_PERSON + " INTEGER, " +
                         COLUMN_NAME_CHARACTER + " INTEGER, " +
                         COLUMN_NAME_LANGUAGE + " VARCHAR(255), " +
+                        "PRIMARY KEY(" + COLUMN_NAME_PERSON + ", " + COLUMN_NAME_CHARACTER + ", " + COLUMN_NAME_LANGUAGE+ "), " +
                         "FOREIGN KEY(" + COLUMN_NAME_PERSON + ") REFERENCES " +  PersonDatabseEntry.TABLE_NAME + "(" + PersonDatabseEntry._ID + "), " +
                         "FOREIGN KEY(" + COLUMN_NAME_CHARACTER + ") REFERENCES " + CharacterDatabaseEntry.TABLE_NAME + "(" + CharacterDatabaseEntry._ID + ")" +
                         ")";
@@ -134,11 +133,11 @@ public final class SqlDatabaseContract {
 
         public static final String CREATE_TABLE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
-                        _ID + " INTEGER PRIMARY KEY," +
                         COLUMN_NAME_ANIME + " INTEGER, " +
                         COLUMN_NAME_STAFF + " INTEGER, " +
                         COLUMN_NAME_ROLE + " VARCHAR(255), " +
-                        "FOREIGN KEY(" + COLUMN_NAME_ANIME + ") REFERENCES " + AnimeDatabaseEntry.TABLE_NAME + "(" + AnimeDatabaseEntry._ID + "), " +
+                        "PRIMARY KEY(" + COLUMN_NAME_STAFF + ", " + COLUMN_NAME_ROLE + ", " + COLUMN_NAME_ANIME + "), " +
+                        "FOREIGN KEY(" + COLUMN_NAME_ANIME + ") REFERENCES " + AnimeDatabaseEntry.TABLE_NAME + "(" + AnimeDatabaseEntry.COLUMN_NAME_ID + "), " +
                         "FOREIGN KEY(" + COLUMN_NAME_STAFF + ") REFERENCES " + PersonDatabseEntry.TABLE_NAME + "(" + PersonDatabseEntry._ID + ")" +
                         ")";
 

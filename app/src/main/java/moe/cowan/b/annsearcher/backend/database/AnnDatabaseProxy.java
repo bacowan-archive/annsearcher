@@ -2,10 +2,10 @@ package moe.cowan.b.annsearcher.backend.database;
 
 import android.content.Context;
 
-import org.mockito.verification.Timeout;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -50,6 +50,10 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
         this.xmlParser = xmlParser;
     }
 
+    public void setInternalProxy(InternalDatabaseProxy proxy) {
+        this.internalProxy = proxy;
+    }
+
     @Override
     public void setContext(Context context) {
         requestGetter.setContext(context);
@@ -57,6 +61,13 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
 
     @Override
     public PeopleOfTitle getPeopleOfTitle(Id animeId) throws TitleNotFoundException {
+        PeopleOfTitle internalDbPeopleOfTitle = internalProxy.getPeopleOfTitle(animeId);
+        if (internalDbPeopleOfTitle.getCast().isEmpty() && internalDbPeopleOfTitle.getStaff().isEmpty())
+            return getPeopleOfTitleFromAnn(animeId);
+        return internalDbPeopleOfTitle;
+    }
+
+    private PeopleOfTitle getPeopleOfTitleFromAnn(Id animeId) {
         String xml = getResponse(animeId);
         Anime thisAnime = parseSingleAnimeResponse(xml);
         return thisAnime.getPeopleOfTitle();
@@ -81,13 +92,24 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
     }
 
     public void getAnnIdsForAnime(Collection<Anime> animes) {
-        for (Anime anime : animes)
-            getAnnIdsForAnime(anime);
+        for (Anime anime : animes) {
+            Collection<String> knownSynonyms = getAnimeSynonyms(anime);
+            if (!knownSynonyms.isEmpty()) {
+                anime.setSynonyms(knownSynonyms);
+            }
+            else {
+                getAnnIdsForAnime(anime);
+            }
+        }
+    }
+
+    private Collection<String> getAnimeSynonyms(Anime anime) {
+        return internalProxy.getAnimeSynonyms(anime.getId());
     }
 
     private void getAnnIdsForAnime(Anime anime) {
-        Collection<String> malSynonyms = anime.getSynonyms();
-        malSynonyms.add(anime.getTitle());
+        List<String> malSynonyms = new ArrayList<>(anime.getSynonyms());
+        malSynonyms.add(0, anime.getTitle());
         String xml;
 
         for (String malAnimeSynonym : malSynonyms) {
@@ -109,12 +131,6 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
                     idSetter.setString(anime.getId(), potentialAnnMatch.getId().getString(StringIdKey.ANN));
                     return;
                 }
-                /*for (String malSynonym : malSynonyms) {
-                    if (potentialAnnSynonyms.contains(malSynonym)) {
-                        idSetter.setString(anime.getId(), potentialAnnMatch.getId().getString(StringIdKey.MAL));
-                        return;
-                    }
-                }*/
             }
         }
     }
