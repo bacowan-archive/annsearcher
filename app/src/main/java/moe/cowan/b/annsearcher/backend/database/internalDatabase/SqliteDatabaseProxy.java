@@ -16,12 +16,12 @@ import moe.cowan.b.annsearcher.backend.Anime;
 import moe.cowan.b.annsearcher.backend.Ids.Id;
 import moe.cowan.b.annsearcher.backend.Ids.StringIdGetter;
 import moe.cowan.b.annsearcher.backend.Ids.StringIdKey;
+import moe.cowan.b.annsearcher.backend.Ids.StringIdSetter;
 import moe.cowan.b.annsearcher.backend.Language;
 import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
 import moe.cowan.b.annsearcher.backend.Person;
 import moe.cowan.b.annsearcher.backend.WatchingStatus;
 import moe.cowan.b.annsearcher.backend.database.InternalDatabaseProxy;
-import moe.cowan.b.annsearcher.exceptions.NoInternalIdException;
 
 import static moe.cowan.b.annsearcher.backend.database.internalDatabase.SqlDatabaseContract.*;
 
@@ -71,9 +71,15 @@ public class SqliteDatabaseProxy implements InternalDatabaseProxy {
     private static final String CROSSREFERENCE_TITLE_COLUMN = "a." + AnimeDatabaseEntry.COLUMN_NAME_TITLE;
     private static final String CROSSREFERENCE_NAME_COLUMN = "c." + CharacterDatabaseEntry.COLUMN_NAME_NAME;
 
+    private static final String LARGEST_INTERNAL_ID_COLUMN = "MAX(" + IdDatabaseEntry.COLUMN_NAME_INTERNAL + ")";
+    private static final String GET_LARGEST_INTERNAL_ID_QUERY = "SELECT " + LARGEST_INTERNAL_ID_COLUMN + " FROM " + IdDatabaseEntry.TABLE_NAME + ";";
+
+    private static final String GET_INTERNAL_ID_FROM_MAL = "SELECT " + IdDatabaseEntry.COLUMN_NAME_INTERNAL + " FROM " + IdDatabaseEntry.TABLE_NAME + " WHERE " + IdDatabaseEntry.TABLE_NAME + "." + IdDatabaseEntry.COLUMN_NAME_MAL + " =?";
+
 
     private SqliteDBHelper helper;
     private static final StringIdGetter internalIdGetter = new StringIdGetter(StringIdKey.INTERNAL);
+    private static final StringIdSetter internalIdSetter = new StringIdSetter(StringIdKey.INTERNAL);
     private static final StringIdGetter annIdGetter = new StringIdGetter(StringIdKey.ANN);
     private static final StringIdGetter malIdGetter = new StringIdGetter(StringIdKey.MAL);
 
@@ -87,18 +93,17 @@ public class SqliteDatabaseProxy implements InternalDatabaseProxy {
 
     @Override
     public void addAnime(Anime anime) {
-        if (validateId(anime.getId()))
-            addAnimeWithoutValidation(anime);
-        else
-            throw new NoInternalIdException("Id of anime " + anime.toString() + " has no internalId value.");
-    }
-
-    private void addAnimeWithoutValidation(Anime anime) {
         SQLiteDatabase db = helper.getWritableDatabase();
+        calculateInternalId(anime);
         long animeId = insertAnimeValues(db, anime);
         insertSynonyms(db, anime, animeId);
         insertIdValues(db, anime);
         insertPeopleValues(db, anime, animeId);
+    }
+
+    private void calculateInternalId(Anime anime) {
+        if (internalIdGetter.getStringId(anime.getId()).equals(""))
+            internalIdSetter.setString(anime.getId(), Integer.toString(getLargestInternalId() + 1));
     }
 
     private long insertAnimeValues(SQLiteDatabase db, Anime anime) {
@@ -434,5 +439,34 @@ public class SqliteDatabaseProxy implements InternalDatabaseProxy {
 
     private boolean validateId(Id id) {
         return id != null && !internalIdGetter.getStringId(id).isEmpty();
+    }
+
+    @Override
+    public void getInternalIdsFromMalIds(Id id) {
+        StringIdGetter malIdGetter = new StringIdGetter(StringIdKey.MAL);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor c = db.rawQuery(GET_INTERNAL_ID_FROM_MAL, new String[]{malIdGetter.getStringId(id)});
+        setInternalIdFromCursor(c, id);
+        c.close();
+    }
+
+    private void setInternalIdFromCursor(Cursor c, Id id) {
+        StringIdSetter internalIdSetter = new StringIdSetter(StringIdKey.INTERNAL);
+        c.moveToFirst();
+        internalIdSetter.setString(id, Integer.toString(c.getInt(c.getColumnIndex(IdDatabaseEntry.COLUMN_NAME_INTERNAL))));
+    }
+
+    public int getLargestInternalId() {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor c = db.rawQuery(GET_LARGEST_INTERNAL_ID_QUERY, null);
+        int id = idFromCursor(c);
+        c.close();
+
+        return id;
+    }
+
+    private int idFromCursor(Cursor c) {
+        c.moveToFirst();
+        return c.getInt(c.getColumnIndex(LARGEST_INTERNAL_ID_COLUMN));
     }
 }

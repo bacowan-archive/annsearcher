@@ -13,12 +13,6 @@ public class StringIdSetter {
 
     public void setString(Id id, String str) {
         id.addId(stringIdKey, str);
-        checkAndSetInternalId(id, str);
-    }
-
-    private void checkAndSetInternalId(Id id, String str) {
-        if (stringIdKey == StringIdKey.ANN)
-            id.addId(StringIdKey.INTERNAL, str);
     }
 
 }

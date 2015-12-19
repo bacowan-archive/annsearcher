@@ -5,11 +5,6 @@ import android.test.InstrumentationTestCase;
 import java.util.List;
 
 import moe.cowan.b.annsearcher.backend.Anime;
-import moe.cowan.b.annsearcher.backend.Ids.Id;
-import moe.cowan.b.annsearcher.backend.Ids.StringIdKey;
-import moe.cowan.b.annsearcher.backend.Ids.StringIdSetter;
-import moe.cowan.b.annsearcher.backend.database.AnnDatabaseProxy;
-import moe.cowan.b.annsearcher.backend.database.AuthenticatedRequest;
 import moe.cowan.b.annsearcher.backend.database.AuthenticatedRequestGetter;
 import moe.cowan.b.annsearcher.backend.database.MalDatabaseProxy;
 import moe.cowan.b.annsearcher.backend.database.RequestGetter;
@@ -31,7 +26,7 @@ public class MalDatabaseProxyTest extends InstrumentationTestCase {
     private String password = "password";
 
     public void setUp() throws Exception {
-        setupDexmaker();
+        Utils.setupDexmaker(getInstrumentation());
         getter = mock(RequestGetter.class);
         authenticatedGetter = mock(AuthenticatedRequestGetter.class);
         listParser = mock(XmlParser.class);
@@ -39,16 +34,9 @@ public class MalDatabaseProxyTest extends InstrumentationTestCase {
         proxy = new MalDatabaseProxy(getter, authenticatedGetter, listParser, animeParser, username, password);
     }
 
-    private void setupDexmaker() {
-        System.setProperty(
-                "dexmaker.dexcache",
-                getInstrumentation().getTargetContext().getCacheDir().getPath());
-    }
-
     public void testBasicGetCallsCorrectUrl() throws Exception {
         proxy.getAllSeenAnime();
 
         verify(getter, times(1)).getRequestByUrl("http://myanimelist.net/malappinfo.php?u=" + username + "&status=all&type=anime");
     }
-
 }

@@ -2,7 +2,9 @@ package moe.cowan.b.annsearcher.backend;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import moe.cowan.b.annsearcher.backend.Ids.Id;
 
@@ -14,7 +16,7 @@ public class Anime implements Serializable {
     private String title = "";
     private Id id = null;
     private PeopleOfTitle peopleOfTitle = new PeopleOfTitle();
-    private Collection<String> synonyms = new LinkedList<>();
+    private Collection<String> synonyms = new HashSet<>();
     private WatchingStatus status;
 
     public void setTitle(String title) {
@@ -54,6 +56,14 @@ public class Anime implements Serializable {
 
     public void setStatus(WatchingStatus status) {
         this.status = status;
+    }
+
+    public void setAllValues(Anime otherAnime) {
+        setId(otherAnime.getId());
+        setPeopleOfTitle(otherAnime.getPeopleOfTitle());
+        this.synonyms.addAll(otherAnime.getSynonyms());
+        setStatus(otherAnime.getStatus());
+        setTitle(otherAnime.getTitle());
     }
 
     @Override

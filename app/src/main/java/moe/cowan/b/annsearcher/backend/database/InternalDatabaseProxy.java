@@ -1,7 +1,5 @@
 package moe.cowan.b.annsearcher.backend.database;
 
-import android.content.Context;
-
 import java.util.Collection;
 import java.util.Map;
 
@@ -20,4 +18,5 @@ public interface InternalDatabaseProxy {
     Map<String, Collection<String>> crossReferenceActor(Person person);
     Collection<String> getAnimeSynonyms(Id id);
     PeopleOfTitle getPeopleOfTitle(Id id);
+    void getInternalIdsFromMalIds(Id id);
 }
