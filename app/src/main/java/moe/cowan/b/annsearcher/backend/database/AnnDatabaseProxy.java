@@ -91,16 +91,24 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
         return allAnime.get(0);
     }
 
-    public void getAnnIdsForAnime(Collection<Anime> animes) {
+    public void getInternalIdsForAnime(Collection<Anime> animes) {
+        for (Anime anime : animes)
+            internalProxy.getInternalIdsFromMalIds(anime.getId());
+    }
+
+    public void getAnimeInformation(Collection<Anime> animes) {
         for (Anime anime : animes) {
-            Collection<String> knownSynonyms = getAnimeSynonyms(anime);
-            if (!knownSynonyms.isEmpty()) {
-                anime.setSynonyms(knownSynonyms);
-            }
-            else {
-                getAnnIdsForAnime(anime);
-            }
+            Anime animeWithInfo = internalProxy.getAnime(anime.getId());
+            if (animeWithInfo == null)
+                getAnimeInformationFromAnn(anime);
+            else
+                anime.setAllValues(animeWithInfo);
         }
+    }
+
+    private void getAnimeInformationFromAnn(Anime anime) {
+        getAnnIdsForAnime(anime);
+        anime.setPeopleOfTitle(getPeopleOfTitleFromAnn(anime.getId()));
     }
 
     private Collection<String> getAnimeSynonyms(Anime anime) {
@@ -133,6 +141,12 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
                 }
             }
         }
+
+    }
+
+    public void cacheAnime(Collection<Anime> animes) {
+        for (Anime anime : animes)
+            internalProxy.addAnime(anime);
     }
 
     private String formatForUrl(String str) {

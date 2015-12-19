@@ -26,6 +26,11 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
         this.malDatabaseProxy = new MalDatabaseProxy();
     }
 
+    public AnnMalDatabaseProxy(AnnDatabaseProxy annProxy, MalDatabaseProxy malProxy) {
+        this.annDatabaseProxy = annProxy;
+        this.malDatabaseProxy = malProxy;
+    }
+
     public AnnMalDatabaseProxy(Parcel in) {
         this();
         internalDbName = in.readString();
@@ -41,7 +46,9 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
     @Override
     public Collection<Anime> getAllSeenAnime() {
         Collection<Anime> allSeenAnime = malDatabaseProxy.getAllSeenAnime();
-        annDatabaseProxy.getAnnIdsForAnime(allSeenAnime);
+        annDatabaseProxy.getInternalIdsForAnime(allSeenAnime);
+        annDatabaseProxy.getAnimeInformation(allSeenAnime);
+        annDatabaseProxy.cacheAnime(allSeenAnime);
         return allSeenAnime;
     }
 
@@ -74,6 +81,13 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
     }
 
     @Override
+    public Collection<Anime> searchAnime(String searchString) {
+        Collection<Anime> searchResults = malDatabaseProxy.searchAnime(searchString);
+        annDatabaseProxy.getAnimeInformation(searchResults);
+        return searchResults;
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }
@@ -83,13 +97,6 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
         dest.writeString(internalDbName);
         dest.writeString(getUsername());
         dest.writeString(malDatabaseProxy.getPassword());
-    }
-
-    @Override
-    public Collection<Anime> searchAnime(String searchString) {
-        Collection<Anime> searchResults = malDatabaseProxy.searchAnime(searchString);
-        annDatabaseProxy.getAnnIdsForAnime(searchResults);
-        return searchResults;
     }
 
     public static final Parcelable.Creator<AnnMalDatabaseProxy> CREATOR =

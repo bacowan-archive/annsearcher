@@ -7,10 +7,12 @@ import java.util.Map;
 
 import moe.cowan.b.annsearcher.backend.Anime;
 import moe.cowan.b.annsearcher.backend.Ids.Id;
+import moe.cowan.b.annsearcher.backend.Ids.StringIdGetter;
+import moe.cowan.b.annsearcher.backend.Ids.StringIdKey;
+import moe.cowan.b.annsearcher.backend.Ids.StringIdSetter;
 import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
 import moe.cowan.b.annsearcher.backend.Person;
 import moe.cowan.b.annsearcher.backend.database.internalDatabase.SqliteDatabaseProxy;
-import moe.cowan.b.annsearcher.exceptions.NoInternalIdException;
 
 /**
  * Created by user on 02/09/2015.
@@ -75,13 +77,6 @@ public class SqlDatabaseTest extends InstrumentationTestCase {
         Utils.assertPeopleOfTitleAreCorrect(peopleOfTitle);
     }
 
-    public void test_AddAnimeWithNoInternalId_ThrowsException() {
-        try {
-            proxy.addAnime(new Anime());
-            fail();
-        } catch (NoInternalIdException e) {}
-    }
-
     public void test_getAnimeWithNoInternalId_ReturnsBlank() {
         Anime anime = proxy.getAnime(new Id());
         assertNull(anime);
@@ -101,6 +96,57 @@ public class SqlDatabaseTest extends InstrumentationTestCase {
         PeopleOfTitle people = proxy.getPeopleOfTitle(new Id());
         assertTrue(people.getCast().isEmpty());
         assertTrue(people.getStaff().isEmpty());
+    }
+
+    public void test_GetLargestInternalId() {
+        Anime testAnime1 = Utils.createBlankAnime();
+        Anime testAnime2 = Utils.createBlankAnime();
+        Anime testAnime3 = Utils.createBlankAnime();
+
+        proxy.addAnime(testAnime1);
+        proxy.addAnime(testAnime2);
+        proxy.addAnime(testAnime3);
+
+        assertEquals(3, proxy.getLargestInternalId());
+    }
+
+    public void test_InternalIdsIncrementFromOne() {
+        StringIdGetter idGetter = new StringIdGetter(StringIdKey.INTERNAL);
+        Anime testAnime1 = Utils.createBlankAnime();
+        Anime testAnime2 = Utils.createBlankAnime();
+        Anime testAnime3 = Utils.createBlankAnime();
+
+        proxy.addAnime(testAnime1);
+        proxy.addAnime(testAnime2);
+        proxy.addAnime(testAnime3);
+
+        assertEquals("1", idGetter.getStringId(testAnime1.getId()));
+        assertEquals("1", idGetter.getStringId(proxy.getAnime(testAnime1.getId()).getId()));
+        assertEquals("2", idGetter.getStringId(testAnime2.getId()));
+        assertEquals("2", idGetter.getStringId(proxy.getAnime(testAnime2.getId()).getId()));
+        assertEquals("3", idGetter.getStringId(testAnime3.getId()));
+        assertEquals("3", idGetter.getStringId(proxy.getAnime(testAnime3.getId()).getId()));
+    }
+
+    public void test_InternalIdsFromMalIds() throws Exception {
+        String internalIdVal = "0";
+        String malIdVal = "1";
+        StringIdSetter internalIdSetter = new StringIdSetter(StringIdKey.INTERNAL);
+        StringIdSetter malIdSetter = new StringIdSetter(StringIdKey.MAL);
+        StringIdGetter internalIdGetter = new StringIdGetter(StringIdKey.INTERNAL);
+        Anime testAnime = Utils.createBlankAnime();
+        Id savedId = new Id();
+        internalIdSetter.setString(savedId, internalIdVal);
+        malIdSetter.setString(savedId, malIdVal);
+        testAnime.setId(savedId);
+
+        proxy.addAnime(testAnime);
+
+        Id testId = new Id();
+        malIdSetter.setString(testId, malIdVal);
+
+        proxy.getInternalIdsFromMalIds(testId);
+        assertEquals(internalIdVal, internalIdGetter.getStringId(testId));
     }
 
     public void tearDown() {

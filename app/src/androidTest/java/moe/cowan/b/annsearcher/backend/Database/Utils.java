@@ -1,5 +1,7 @@
 package moe.cowan.b.annsearcher.backend.Database;
 
+import android.app.Instrumentation;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -176,6 +178,12 @@ public class Utils {
             names.add(p.getName());
         }
         return names;
+    }
+
+    public static void setupDexmaker(Instrumentation instrumentation) {
+        System.setProperty(
+                "dexmaker.dexcache",
+                instrumentation.getTargetContext().getCacheDir().getPath());
     }
 
 

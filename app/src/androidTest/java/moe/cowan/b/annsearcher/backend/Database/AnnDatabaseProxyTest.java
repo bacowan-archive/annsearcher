@@ -62,35 +62,98 @@ public class AnnDatabaseProxyTest extends InstrumentationTestCase {
         assertEquals(peopleOfTitle, returnedPeopleOfTitle);
     }
 
-    public void test_synonymsFromInternalDbAreUsedIfPossible() throws Exception {
-        Id id = new Id("1");
-        Anime fakeAnime = new Anime();
-        fakeAnime.setId(id);
-        Collection<Anime> fakeAnimeCollection = new ArrayList<>();
-        fakeAnimeCollection.add(fakeAnime);
-        String fakeSynonym = "one";
-        Collection<String> fakeSynonyms = new ArrayList<>();
-        fakeSynonyms.add(fakeSynonym);
-        when(internalDatabaseProxy.getAnimeSynonyms(id)).thenReturn(fakeSynonyms);
+    public void test_getAnimeInformation_AddsNewInformationToInputAnime() throws Exception {
+        Anime incompleteAnime = new Anime();
+        Id incompleteId = new Id(Utils.INTERNAL_ID);
+        incompleteAnime.setId(incompleteId);
+        Collection<Anime> animes = new ArrayList<>();
+        animes.add(incompleteAnime);
 
-        proxy.getAnnIdsForAnime(fakeAnimeCollection);
+        when(internalDatabaseProxy.getAnime(incompleteId)).thenReturn(Utils.TEST_ANIME);
 
-        assertEquals(1, fakeAnime.getSynonyms().size());
-        assertTrue(fakeAnime.getSynonyms().contains(fakeSynonym));
+        proxy.getAnimeInformation(animes);
+
+        Utils.assertOtherAnimeSame(incompleteAnime);
     }
 
-    public void test_synonymsFromInternalDbAreNotUsedIfNotPossible() throws Exception {
-        Id id = new Id("1");
-        Anime fakeAnime = new Anime();
-        fakeAnime.setId(id);
-        Collection<Anime> fakeAnimeCollection = new ArrayList<>();
-        fakeAnimeCollection.add(fakeAnime);
-        when(internalDatabaseProxy.getAnimeSynonyms(id)).thenReturn(new ArrayList<String>());
-        parserReturnNoAnime();
+    public void test_getAnimeInformation_DoesNotOverwriteOldAnimeInformation() throws Exception {
+        Anime incompleteAnime = new Anime();
+        Id incompleteId = new Id(Utils.INTERNAL_ID);
+        incompleteAnime.setId(incompleteId);
+        List<Anime> animes = new ArrayList<>();
+        animes.add(incompleteAnime);
+        String extraSynonym = "TEST_SYNONYM";
+        incompleteAnime.addSynonym(extraSynonym);
 
-        proxy.getAnnIdsForAnime(fakeAnimeCollection);
+        when(internalDatabaseProxy.getAnime(incompleteId)).thenReturn(Utils.TEST_ANIME);
 
-        assertEquals(0, fakeAnime.getSynonyms().size());
+        proxy.getAnimeInformation(animes);
+
+        assertTrue(animes.get(0).getSynonyms().contains(extraSynonym));
+    }
+
+    public void test_getAnimeInformation_DoesNotIncludeDuplicateInformation() throws Exception {
+        Anime incompleteAnime = new Anime();
+        Id incompleteId = new Id(Utils.INTERNAL_ID);
+        incompleteAnime.setId(incompleteId);
+        List<Anime> animes = new ArrayList<>();
+        animes.add(incompleteAnime);
+        incompleteAnime.addSynonym(Utils.TEST_ANIME_SYNONYM_1);
+
+        when(internalDatabaseProxy.getAnime(incompleteId)).thenReturn(Utils.TEST_ANIME);
+
+        proxy.getAnimeInformation(animes);
+
+        Utils.assertOtherAnimeSame(incompleteAnime);
+    }
+
+    public void test_getAnimeInformation_DoesNotUseInternalInformationIfNotPossible() throws Exception {
+        Anime incompleteAnime = new Anime();
+        Id incompleteId = new Id(Utils.INTERNAL_ID);
+        incompleteAnime.setId(incompleteId);
+        List<Anime> animes = new ArrayList<>();
+        animes.add(incompleteAnime);
+        incompleteAnime.addSynonym(Utils.TEST_ANIME_SYNONYM_1);
+
+
+        when(parser.parse(anyString())).thenReturn(animes);
+        when(internalDatabaseProxy.getAnime(incompleteId)).thenReturn(null);
+
+        proxy.getAnimeInformation(animes);
+
+        verify(getter, atLeastOnce()).getRequestByUrl(anyString());
+    }
+
+    public void test_getAnimeInformation_UsesInternalInformationIfPossible() throws Exception {
+        Anime incompleteAnime = new Anime();
+        Id incompleteId = new Id(Utils.INTERNAL_ID);
+        incompleteAnime.setId(incompleteId);
+        List<Anime> animes = new ArrayList<>();
+        animes.add(incompleteAnime);
+        incompleteAnime.addSynonym(Utils.TEST_ANIME_SYNONYM_1);
+
+        when(internalDatabaseProxy.getAnime(incompleteId)).thenReturn(Utils.TEST_ANIME);
+
+        proxy.getAnimeInformation(animes);
+
+        verify(getter, never()).getRequestByUrl(anyString());
+    }
+
+    public void test_CacheAnime_CallsAddAnimeForAll() throws Exception {
+        Collection<Anime> animes = new ArrayList<>();
+        Anime anime1 = Utils.createBlankAnime();
+        Anime anime2 = Utils.createBlankAnime();
+        animes.add(anime1);
+        animes.add(anime2);
+
+        proxy.cacheAnime(animes);
+
+        verify(internalDatabaseProxy).addAnime(anime1);
+        verify(internalDatabaseProxy).addAnime(anime2);
+    }
+
+    public void test_CacheAnime_GivesNewInternalIds() throws Exception {
+
     }
 
     private void parserReturnSingleAnime() throws Exception {
