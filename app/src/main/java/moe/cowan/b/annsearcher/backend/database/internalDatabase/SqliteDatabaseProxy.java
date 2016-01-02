@@ -3,6 +3,7 @@ package moe.cowan.b.annsearcher.backend.database.internalDatabase;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
@@ -13,7 +14,10 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import moe.cowan.b.annsearcher.backend.Anime;
+import moe.cowan.b.annsearcher.backend.Callback;
 import moe.cowan.b.annsearcher.backend.Ids.Id;
+import moe.cowan.b.annsearcher.backend.Ids.IncrementalIdCalculator;
+import moe.cowan.b.annsearcher.backend.Ids.NewIdCalculator;
 import moe.cowan.b.annsearcher.backend.Ids.StringIdGetter;
 import moe.cowan.b.annsearcher.backend.Ids.StringIdKey;
 import moe.cowan.b.annsearcher.backend.Ids.StringIdSetter;
@@ -71,11 +75,10 @@ public class SqliteDatabaseProxy implements InternalDatabaseProxy {
     private static final String CROSSREFERENCE_TITLE_COLUMN = "a." + AnimeDatabaseEntry.COLUMN_NAME_TITLE;
     private static final String CROSSREFERENCE_NAME_COLUMN = "c." + CharacterDatabaseEntry.COLUMN_NAME_NAME;
 
-    private static final String LARGEST_INTERNAL_ID_COLUMN = "MAX(" + IdDatabaseEntry.COLUMN_NAME_INTERNAL + ")";
-    private static final String GET_LARGEST_INTERNAL_ID_QUERY = "SELECT " + LARGEST_INTERNAL_ID_COLUMN + " FROM " + IdDatabaseEntry.TABLE_NAME + ";";
-
     private static final String GET_INTERNAL_ID_FROM_MAL = "SELECT " + IdDatabaseEntry.COLUMN_NAME_INTERNAL + " FROM " + IdDatabaseEntry.TABLE_NAME + " WHERE " + IdDatabaseEntry.TABLE_NAME + "." + IdDatabaseEntry.COLUMN_NAME_MAL + " =?";
 
+    private static final String LARGEST_INTERNAL_ID_COLUMN = "MAX(" + IdDatabaseEntry.COLUMN_NAME_INTERNAL + ")";
+    private static final String GET_LARGEST_INTERNAL_ID_QUERY = "SELECT " + LARGEST_INTERNAL_ID_COLUMN + " FROM " + IdDatabaseEntry.TABLE_NAME + ";";
 
     private SqliteDBHelper helper;
     private static final StringIdGetter internalIdGetter = new StringIdGetter(StringIdKey.INTERNAL);
@@ -83,8 +86,21 @@ public class SqliteDatabaseProxy implements InternalDatabaseProxy {
     private static final StringIdGetter annIdGetter = new StringIdGetter(StringIdKey.ANN);
     private static final StringIdGetter malIdGetter = new StringIdGetter(StringIdKey.MAL);
 
+    private NewIdCalculator idCalculator;
+
+    public SqliteDatabaseProxy(SqliteDBHelper helper) {
+        this.helper = helper;
+        this.idCalculator = new IncrementalIdCalculator(new LargestIdCallback());
+    }
+
     public SqliteDatabaseProxy(Context context, String dbName) {
         helper = new SqliteDBHelper(context, dbName);
+        idCalculator = new IncrementalIdCalculator(new LargestIdCallback());
+    }
+
+    public SqliteDatabaseProxy(Context context, String dbName, NewIdCalculator idCalculator) {
+        helper = new SqliteDBHelper(context, dbName);
+        this.idCalculator = idCalculator;
     }
 
     public void close() {
@@ -94,16 +110,21 @@ public class SqliteDatabaseProxy implements InternalDatabaseProxy {
     @Override
     public void addAnime(Anime anime) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        calculateInternalId(anime);
+        calculateInternalAnimeId(anime);
         long animeId = insertAnimeValues(db, anime);
         insertSynonyms(db, anime, animeId);
         insertIdValues(db, anime);
         insertPeopleValues(db, anime, animeId);
     }
 
-    private void calculateInternalId(Anime anime) {
+    private void calculateInternalAnimeId(Anime anime) {
         if (internalIdGetter.getStringId(anime.getId()).equals(""))
-            internalIdSetter.setString(anime.getId(), Integer.toString(getLargestInternalId() + 1));
+            internalIdSetter.setString(anime.getId(), idCalculator.calculateNewId());
+    }
+
+    private void calculateInternalPersonId(Person person) {
+        if (internalIdGetter.getStringId(person.getId()).equals(""))
+            internalIdSetter.setString(person.getId(), idCalculator.calculateNewId());
     }
 
     private long insertAnimeValues(SQLiteDatabase db, Anime anime) {
@@ -173,18 +194,19 @@ public class SqliteDatabaseProxy implements InternalDatabaseProxy {
     private void insertStaffValues(SQLiteDatabase db, Anime anime, long animeId) {
         for (Person p : anime.getPeopleOfTitle().getStaff()) {
             long personId = insertSinglePersonValues(db, p);
-            insertSingleStaffValues(db, p, animeId, personId);
+            insertSingleStaffRelationValues(db, p, animeId, personId);
         }
     }
 
     private long insertSinglePersonValues(SQLiteDatabase db, Person person) {
+        calculateInternalPersonId(person);
         ContentValues values = new ContentValues();
         values.put(PersonDatabseEntry._ID, internalIdGetter.getStringId(person.getId()));
         values.put(PersonDatabseEntry.COLUMN_NAME_NAME, person.getName());
         return db.insertWithOnConflict(PersonDatabseEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    private void insertSingleStaffValues(SQLiteDatabase db, Person person, long animeId, long personId) {
+    private void insertSingleStaffRelationValues(SQLiteDatabase db, Person person, long animeId, long personId) {
         ContentValues values = new ContentValues();
         values.put(AnimeStaffRelation.COLUMN_NAME_STAFF, personId);
         values.put(AnimeStaffRelation.COLUMN_NAME_ANIME, animeId);
@@ -453,7 +475,9 @@ public class SqliteDatabaseProxy implements InternalDatabaseProxy {
     private void setInternalIdFromCursor(Cursor c, Id id) {
         StringIdSetter internalIdSetter = new StringIdSetter(StringIdKey.INTERNAL);
         c.moveToFirst();
-        internalIdSetter.setString(id, Integer.toString(c.getInt(c.getColumnIndex(IdDatabaseEntry.COLUMN_NAME_INTERNAL))));
+        try {
+            internalIdSetter.setString(id, Integer.toString(c.getInt(c.getColumnIndex(IdDatabaseEntry.COLUMN_NAME_INTERNAL))));
+        } catch (CursorIndexOutOfBoundsException e) {}
     }
 
     public int getLargestInternalId() {
@@ -469,4 +493,12 @@ public class SqliteDatabaseProxy implements InternalDatabaseProxy {
         c.moveToFirst();
         return c.getInt(c.getColumnIndex(LARGEST_INTERNAL_ID_COLUMN));
     }
+
+    private class LargestIdCallback implements Callback<Integer> {
+        @Override
+        public Integer call() {
+            return getLargestInternalId();
+        }
+    }
+
 }

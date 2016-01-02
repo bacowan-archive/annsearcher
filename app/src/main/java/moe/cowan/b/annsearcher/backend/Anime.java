@@ -46,6 +46,10 @@ public class Anime implements Serializable {
         this.synonyms.add(synonym);
     }
 
+    public void addSynonym(Collection<String> synonyms) {
+        this.synonyms.addAll(synonyms);
+    }
+
     public void setSynonyms(Collection<String> synonyms) {
         this.synonyms = synonyms;
     }

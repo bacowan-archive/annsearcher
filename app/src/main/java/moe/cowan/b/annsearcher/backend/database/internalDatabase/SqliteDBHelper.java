@@ -3,6 +3,10 @@ package moe.cowan.b.annsearcher.backend.database.internalDatabase;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.test.IsolatedContext;
+import android.test.RenamingDelegatingContext;
+import android.test.mock.MockContentResolver;
+import android.test.mock.MockContext;
 
 /**
  * Created by user on 02/09/2015.
@@ -12,6 +16,10 @@ public class SqliteDBHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "anime.db";
+
+    /*public SqliteDBHelper() {
+        this(new IsolatedContext(new MockContentResolver(), new RenamingDelegatingContext(new MockContext(), "")));
+    }*/
 
     public SqliteDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

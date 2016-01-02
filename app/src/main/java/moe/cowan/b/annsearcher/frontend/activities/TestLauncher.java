@@ -90,7 +90,7 @@ public class TestLauncher extends LauncherActivity {
         }
 
         @Override
-        public PeopleOfTitle getPeopleOfTitle(Id animeId) throws TitleNotFoundException {
+        public PeopleOfTitle getPeopleOfTitle(Anime anime) throws TitleNotFoundException {
             PeopleOfTitle people = new PeopleOfTitle();
             people.setCast( createCast() );
             return people;

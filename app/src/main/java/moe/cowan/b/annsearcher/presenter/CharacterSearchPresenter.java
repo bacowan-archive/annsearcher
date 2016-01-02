@@ -34,23 +34,23 @@ public class CharacterSearchPresenter {
         peopleFilter = new JapanesePeopleFilter();
     }
 
-    public void loadAllCastOfAnime(Id animeId) {
-        RefreshTask rt = new RefreshTask(animeId);
+    public void loadAllCastOfAnime(Anime anime) {
+        RefreshTask rt = new RefreshTask(anime);
         rt.execute();
     }
 
 
     private class RefreshTask extends AsyncTask<Void,Void,Collection<Person>> {
 
-        private Id animeId;
+        private Anime anime;
 
-        public RefreshTask(Id animeId) {
-            this.animeId = animeId;
+        public RefreshTask(Anime anime) {
+            this.anime = anime;
         }
 
         @Override
         protected Collection<Person> doInBackground(Void... params) {
-            Collection<Person> allPeopleOfTitle = proxy.getPeopleOfTitle(animeId).getCast();
+            Collection<Person> allPeopleOfTitle = proxy.getPeopleOfTitle(anime).getCast();
             peopleFilter.filter(allPeopleOfTitle);
             return allPeopleOfTitle;
         }

@@ -39,8 +39,8 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
     }
 
     @Override
-    public PeopleOfTitle getPeopleOfTitle(Id animeId) throws TitleNotFoundException {
-        return annDatabaseProxy.getPeopleOfTitle(animeId);
+    public PeopleOfTitle getPeopleOfTitle(Anime anime) throws TitleNotFoundException {
+        return annDatabaseProxy.getPeopleOfTitle(anime);
     }
 
     @Override
@@ -83,7 +83,8 @@ public class AnnMalDatabaseProxy implements DatabaseProxy {
     @Override
     public Collection<Anime> searchAnime(String searchString) {
         Collection<Anime> searchResults = malDatabaseProxy.searchAnime(searchString);
-        annDatabaseProxy.getAnimeInformation(searchResults);
+        //annDatabaseProxy.getAnimeInformation(searchResults);
+        // TODO: the above line should not execute until the information is needed.
         return searchResults;
     }
 

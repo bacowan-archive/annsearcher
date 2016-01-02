@@ -15,9 +15,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import moe.cowan.b.annsearcher.backend.Anime;
+import moe.cowan.b.annsearcher.backend.Ids.StringIdGetter;
+import moe.cowan.b.annsearcher.backend.Ids.StringIdKey;
 import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
 import moe.cowan.b.annsearcher.backend.Person;
 import moe.cowan.b.annsearcher.backend.xml.AnnXmlParser;
+import moe.cowan.b.annsearcher.exceptions.AnimeNotFoundException;
 
 /**
  * Created by user on 26/07/2015.
@@ -25,15 +28,24 @@ import moe.cowan.b.annsearcher.backend.xml.AnnXmlParser;
 public class AnnXmlParserTest extends InstrumentationTestCase {
 
     private AnnXmlParser parser;
+    private static final StringIdGetter annIdGetter = new StringIdGetter(StringIdKey.ANN);
 
     public void setUp() throws Exception {
         parser = new AnnXmlParser();
     }
 
-    public void testValidSingleAnimeParse() throws Exception {
+    public void test_ValidSingleAnimeParse() throws Exception {
         InputStream exampleAnimeInput = getAnnExampleInputStream();
         Anime parsedAnime = parser.parse(exampleAnimeInput).get(0);
         assertAnimeAreRecursivelyEqual(AnnExampleAnimeBuilder.buildAnime(), parsedAnime);
+    }
+
+    public void test_AnimeNotFound_ThrowsException() throws Exception {
+        String exampleInput = "<ann><warning>no result for anime=1</warning></ann>";
+        try {
+            parser.parse(exampleInput);
+            fail();
+        } catch (AnimeNotFoundException e) {}
     }
 
     private InputStream getAnnExampleInputStream() throws Exception {
@@ -42,7 +54,7 @@ public class AnnXmlParserTest extends InstrumentationTestCase {
 
     private void assertAnimeAreRecursivelyEqual(Anime expectedAnime, Anime anime2) {
         assertEquals(expectedAnime.getTitle(), anime2.getTitle());
-        assertEquals(expectedAnime.getId(), anime2.getId());
+        assertEquals(annIdGetter.getStringId(expectedAnime.getId()), annIdGetter.getStringId(anime2.getId()));
         assertAllCastEqual(expectedAnime.getPeopleOfTitle(), anime2.getPeopleOfTitle());
         assertAllStaffEqual(expectedAnime.getPeopleOfTitle(), anime2.getPeopleOfTitle());
     }
@@ -69,15 +81,15 @@ public class AnnXmlParserTest extends InstrumentationTestCase {
 
     private Person getOtherPerson(Person expectedPerson, Collection<Person> otherPersons) {
         for (Person otherPerson : otherPersons) {
-            if (otherPerson.getId().equals(expectedPerson.getId()))
+            if (annIdGetter.getStringId(otherPerson.getId()).equals(annIdGetter.getStringId(expectedPerson.getId())))
                 return otherPerson;
         }
-        fail();
+        fail("A person in the expected anime was not present in the actual anime: " + expectedPerson.getName());
         return null;
     }
 
     private void assertAllPeopleAreRecursivelyEqual(Person p1, Person p2) {
-        assertEquals(p1.getId(), p2.getId());
+        assertEquals(annIdGetter.getStringId(p1.getId()), annIdGetter.getStringId(p2.getId()));
         assertEquals(p1.getLanguage(), p2.getLanguage());
         assertEquals(p1.getName(), p2.getName());
         assertEquals(p1.getRole(), p2.getRole());
