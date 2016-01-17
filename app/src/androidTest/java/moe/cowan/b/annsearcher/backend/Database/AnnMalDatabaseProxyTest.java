@@ -41,7 +41,7 @@ public class AnnMalDatabaseProxyTest extends InstrumentationTestCase {
         verify(malDatabaseProxy).searchAnime(searchString);
     }
 
-    public void test_Search_QuerriesAnnForIds() {
+    /*public void test_Search_QuerriesAnnForIds() {
         String searchString = "string";
         Anime anime = Utils.createBlankAnime();
         Collection<Anime> searchResults = new ArrayList<>();
@@ -51,7 +51,7 @@ public class AnnMalDatabaseProxyTest extends InstrumentationTestCase {
         proxy.searchAnime(searchString);
 
         verify(annDatabaseProxy).getAnimeInformation(searchResults);
-    }
+    }*/
 
     public void test_GetAllSeenAnime_CachesToInternalDatabase() {
         Anime anime = Utils.createBlankAnime();

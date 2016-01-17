@@ -14,6 +14,6 @@ import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
  * Created by user on 18/07/2015.
  */
 public interface DatabaseInfoProxy {
-    PeopleOfTitle getPeopleOfTitle(Id animeId) throws TitleNotFoundException;
+    PeopleOfTitle getPeopleOfTitle(Anime anime) throws TitleNotFoundException;
     void setContext(Context context);
 }

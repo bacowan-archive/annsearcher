@@ -19,6 +19,7 @@ import moe.cowan.b.annsearcher.backend.Ids.StringIdSetter;
 import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
 import moe.cowan.b.annsearcher.backend.xml.AnnXmlParser;
 import moe.cowan.b.annsearcher.backend.xml.XmlParser;
+import moe.cowan.b.annsearcher.exceptions.AnimeNotFoundException;
 import moe.cowan.b.annsearcher.exceptions.DatabaseRuntimeException;
 import moe.cowan.b.annsearcher.exceptions.TitleNotFoundException;
 import moe.cowan.b.annsearcher.exceptions.XmlParserException;
@@ -60,15 +61,17 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
     }
 
     @Override
-    public PeopleOfTitle getPeopleOfTitle(Id animeId) throws TitleNotFoundException {
-        PeopleOfTitle internalDbPeopleOfTitle = internalProxy.getPeopleOfTitle(animeId);
+    public PeopleOfTitle getPeopleOfTitle(Anime anime) throws TitleNotFoundException {
+        PeopleOfTitle internalDbPeopleOfTitle = internalProxy.getPeopleOfTitle(anime.getId());
         if (internalDbPeopleOfTitle.getCast().isEmpty() && internalDbPeopleOfTitle.getStaff().isEmpty())
-            return getPeopleOfTitleFromAnn(animeId);
+            return getPeopleOfTitleFromAnn(anime);
         return internalDbPeopleOfTitle;
     }
 
-    private PeopleOfTitle getPeopleOfTitleFromAnn(Id animeId) {
-        String xml = getResponse(animeId);
+    private PeopleOfTitle getPeopleOfTitleFromAnn(Anime anime) {
+        if (idGetter.getStringId(anime.getId()) == null || idGetter.getStringId(anime.getId()).equals(""))
+            getAnnIdsForAnime(anime);
+        String xml = getResponse(anime.getId());
         Anime thisAnime = parseSingleAnimeResponse(xml);
         return thisAnime.getPeopleOfTitle();
     }
@@ -100,7 +103,11 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
         for (Anime anime : animes) {
             Anime animeWithInfo = internalProxy.getAnime(anime.getId());
             if (animeWithInfo == null)
-                getAnimeInformationFromAnn(anime);
+                try {
+                    getAnimeInformationFromAnn(anime);
+                } catch (AnimeNotFoundException e) {
+                    // TODO: Something
+                }
             else
                 anime.setAllValues(animeWithInfo);
         }
@@ -108,7 +115,7 @@ public class AnnDatabaseProxy implements DatabaseInfoProxy {
 
     private void getAnimeInformationFromAnn(Anime anime) {
         getAnnIdsForAnime(anime);
-        anime.setPeopleOfTitle(getPeopleOfTitleFromAnn(anime.getId()));
+        anime.setPeopleOfTitle(getPeopleOfTitleFromAnn(anime));
     }
 
     private Collection<String> getAnimeSynonyms(Anime anime) {

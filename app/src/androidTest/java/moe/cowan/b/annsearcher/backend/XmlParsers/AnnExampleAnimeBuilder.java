@@ -70,7 +70,7 @@ public class AnnExampleAnimeBuilder {
     private static Id buildAnimeId() {
         Id id = new Id();
         id.addId(StringIdKey.ANN, "4658");
-        id.addId(StringIdKey.INTERNAL, "4658");
+        id.addId(StringIdKey.INTERNAL, "");
         return id;
     }
 

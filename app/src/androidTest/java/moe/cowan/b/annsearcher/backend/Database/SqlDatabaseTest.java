@@ -1,5 +1,6 @@
 package moe.cowan.b.annsearcher.backend.Database;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.test.InstrumentationTestCase;
 
 import java.util.Collection;
@@ -12,6 +13,7 @@ import moe.cowan.b.annsearcher.backend.Ids.StringIdKey;
 import moe.cowan.b.annsearcher.backend.Ids.StringIdSetter;
 import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
 import moe.cowan.b.annsearcher.backend.Person;
+import moe.cowan.b.annsearcher.backend.database.internalDatabase.SqliteDBHelper;
 import moe.cowan.b.annsearcher.backend.database.internalDatabase.SqliteDatabaseProxy;
 
 /**
@@ -24,6 +26,7 @@ public class SqlDatabaseTest extends InstrumentationTestCase {
     private SqliteDatabaseProxy proxy;
 
     public void setUp() {
+        Utils.setupDexmaker(getInstrumentation());
         proxy = new SqliteDatabaseProxy(getInstrumentation().getTargetContext(), tempDatabaseName);
     }
 
@@ -98,17 +101,7 @@ public class SqlDatabaseTest extends InstrumentationTestCase {
         assertTrue(people.getStaff().isEmpty());
     }
 
-    public void test_GetLargestInternalId() {
-        Anime testAnime1 = Utils.createBlankAnime();
-        Anime testAnime2 = Utils.createBlankAnime();
-        Anime testAnime3 = Utils.createBlankAnime();
 
-        proxy.addAnime(testAnime1);
-        proxy.addAnime(testAnime2);
-        proxy.addAnime(testAnime3);
-
-        assertEquals(3, proxy.getLargestInternalId());
-    }
 
     public void test_InternalIdsIncrementFromOne() {
         StringIdGetter idGetter = new StringIdGetter(StringIdKey.INTERNAL);
@@ -147,6 +140,18 @@ public class SqlDatabaseTest extends InstrumentationTestCase {
 
         proxy.getInternalIdsFromMalIds(testId);
         assertEquals(internalIdVal, internalIdGetter.getStringId(testId));
+    }
+
+    public void test_InternalIdsFromMalIds_DoesntChangeIdIfNoInternal() {
+        String malIdVal = "1";
+        StringIdSetter malIdSetter = new StringIdSetter(StringIdKey.MAL);
+        StringIdGetter internalIdGetter = new StringIdGetter(StringIdKey.INTERNAL);
+
+        Id testId = new Id();
+        malIdSetter.setString(testId, malIdVal);
+
+        proxy.getInternalIdsFromMalIds(testId);
+        assertEquals("", internalIdGetter.getStringId(testId));
     }
 
     public void tearDown() {

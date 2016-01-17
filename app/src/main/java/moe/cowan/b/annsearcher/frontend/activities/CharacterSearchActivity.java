@@ -43,7 +43,7 @@ public class CharacterSearchActivity extends RoboFragmentActivity implements Cla
     private void initializeListItems() {
         frag = (SearchFragment) getSupportFragmentManager().findFragmentById(R.id.search_fragment);
         frag.setSearchItemStringSelector(new PersonRoleSearchItemStringSelector());
-        presenter.loadAllCastOfAnime(anime.getId());
+        presenter.loadAllCastOfAnime(anime);
     }
 
     private void getMembersFromIntent() {
