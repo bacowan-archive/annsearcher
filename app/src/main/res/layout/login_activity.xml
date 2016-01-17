@@ -18,14 +18,12 @@
             android:orientation="vertical">
 
             <EditText
-                android:text=" "
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/username"
                 android:hint="username"/>
 
             <EditText
-                android:text=" "
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
