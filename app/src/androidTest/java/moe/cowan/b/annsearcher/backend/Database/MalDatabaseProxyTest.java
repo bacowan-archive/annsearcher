@@ -22,7 +22,7 @@ public class MalDatabaseProxyTest extends InstrumentationTestCase {
     private AuthenticatedRequestGetter authenticatedGetter;
     private XmlParser<List<Anime>> listParser;
     private XmlParser<List<Anime>> animeParser;
-    private String username = " ";
+    private String username = "DoomInAJar";
     private String password = "password";
 
     public void setUp() throws Exception {
