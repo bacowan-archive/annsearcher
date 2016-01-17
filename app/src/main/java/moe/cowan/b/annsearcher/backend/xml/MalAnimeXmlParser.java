@@ -1,5 +1,6 @@
 package moe.cowan.b.annsearcher.backend.xml;
 
+import android.support.annotation.NonNull;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -35,14 +36,29 @@ public class MalAnimeXmlParser implements XmlParser<List<Anime>> {
 
     public List<Anime> parse(InputStream in) throws XmlPullParserException, IOException {
         try {
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(in, null);
-            parser.nextTag();
+            XmlPullParser parser = createPullParser(in);
             return readMal(parser);
         } finally {
             in.close();
         }
+    }
+
+    private XmlPullParser createPullParser(InputStream in) throws XmlPullParserException, IOException {
+        XmlPullParser parser = Xml.newPullParser();
+        parser.setFeature(XmlPullParser.FEATURE_PROCESS_DOCDECL, false);
+        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+        parser.setInput(in, null);
+        defineSpecialCharacters(parser);
+        parser.nextTag();
+        return parser;
+    }
+
+    private void defineSpecialCharacters(XmlPullParser parser) throws XmlPullParserException {
+        parser.defineEntityReplacementText("mdash", "-");
+        parser.defineEntityReplacementText("ldquo", "\"");
+        parser.defineEntityReplacementText("rdquo", "\"");
+        parser.defineEntityReplacementText("hellip", "...");
+        parser.defineEntityReplacementText("rsquo", "'");
     }
 
     private List<Anime> readMal(XmlPullParser parser) throws XmlPullParserException, IOException {
@@ -93,10 +109,12 @@ public class MalAnimeXmlParser implements XmlParser<List<Anime>> {
             String name = parser.getName();
             if (name.equals("title")) {
                 anime.setTitle(readTitle(parser));
+            } else if (name.equals("english")) {
+                anime.addSynonym(readEnglish(parser));
             } else if (name.equals("id")) {
                 anime.setId(readId(parser));
             } else if (name.equals("synonyms")) {
-                anime.setSynonyms(readSynonyms(parser));
+                anime.addSynonym(readSynonyms(parser));
             } else {
                 skip(parser);
             }
@@ -110,6 +128,13 @@ public class MalAnimeXmlParser implements XmlParser<List<Anime>> {
         String title = readText(parser);
         parser.require(XmlPullParser.END_TAG, ns, "title");
         return title;
+    }
+
+    private String readEnglish(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, ns, "english");
+        String englishTitle = readText(parser);
+        parser.require(XmlPullParser.END_TAG, ns, "english");
+        return englishTitle;
     }
 
     private Id readId(XmlPullParser parser) throws IOException, XmlPullParserException {

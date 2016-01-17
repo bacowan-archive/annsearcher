@@ -20,6 +20,7 @@ import moe.cowan.b.annsearcher.backend.Ids.StringIdSetter;
 import moe.cowan.b.annsearcher.backend.Language;
 import moe.cowan.b.annsearcher.backend.PeopleOfTitle;
 import moe.cowan.b.annsearcher.backend.Person;
+import moe.cowan.b.annsearcher.exceptions.AnimeNotFoundException;
 
 /**
  * Created by user on 26/07/2015.
@@ -57,6 +58,8 @@ public class AnnXmlParser implements XmlParser<List<Anime>> {
 
             if (name.equals("anime")) {
                 entries.add(readAnime(parser));
+            } else if (name.equals("warning")) {
+                throw new AnimeNotFoundException(readText(parser));
             } else {
                 skip(parser);
             }
